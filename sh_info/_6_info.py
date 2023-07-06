@@ -11,7 +11,7 @@ class Sh_6_info(ShInfoAbstract):
     Just very basic stuff
     """
 
-    def __init__(_s, pulse, top_point):
+    def __init__(_s, pulse, top_point, xs_6):
         super().__init__()
         _s.id = '6'
 
@@ -22,12 +22,12 @@ class Sh_6_info(ShInfoAbstract):
 
         _s.ld = top_point
         _s.child_names = ['fs', 'srs']
-        _s.fs_gi = _s.gen_fs_gi(pulse)  # OBS: sp_gi generated in f class. There is no info class for f.
+        _s.fs_gi = _s.gen_fs_gi(pulse, xs_6)  # OBS: sp_gi generated in f class. There is no info class for f.
 
         if P.A_SPS == 1:
             _s.sps_gi = _s.gen_sps_gi(pulse)
 
-    def gen_fs_gi(_s, pulse):
+    def gen_fs_gi(_s, pulse, xs_6):
         """
         This has to be provided because the fs are generated w.r.t. sh.
         This is like the constructor input for F class
@@ -39,8 +39,9 @@ class Sh_6_info(ShInfoAbstract):
             'frames_tot': FRAMES_TOT,
             'scale_ss': [0.01, 1.1],
             'frame_ss': None,  # simpler with this
-            'ld': [_s.ld[0] - 2, _s.ld[1]],
+            'ld': None,  # set at init
             'x_mov': list(np.linspace(0, -15, num=FRAMES_TOT)),  # SPECIAL
+            'xs_6': xs_6,
             'zorder': 5
         }
 
@@ -52,33 +53,23 @@ class Sh_6_info(ShInfoAbstract):
         THEIR INIT FRAMES CAN BE SET BY F THOUGH.
         """
         sps_gi = {
+            'alpha_y_range': [0.5, 1],
             'init_frames': init_frames,  # ONLY FOR THIS TYPE
-            'frames_tot': 300,  # MUST BE LOWER THAN SP.FRAMES_TOT. MAYBE NOT. INVOLVED IN BUG
-            # 'v_loc': 50, 'v_scale': 20,
-            # 'num_loc': P.NUM_SPS_F, 'num_scale': P.NUM_SPS_F / 2,
-            # 'theta_loc': 1.52, 'theta_scale': 0.2,
-            # 'r_f_d_loc': 0.15, 'r_f_d_scale': 0.23,
-            'sp_len_loc': 30, 'sp_len_scale': 5,  # this means that everything will be long, and only slow ones survive
-            # 'rad_rot': 0.1,
+            'frames_tot': 200,  # MUST BE LOWER THAN SP.FRAMES_TOT. MAYBE NOT. INVOLVED IN BUG
+            'v_loc': 120, 'v_scale': 2,
+            'theta_loc': 0.5 * np.pi - 0.0, 'theta_scale': 0.2,  # unit circle straight up
+            'sp_len_start_loc': 1, 'sp_len_start_scale': 1,
+            'sp_len_stop_loc': 1, 'sp_len_stop_scale': 1,
+            'init_frame_max_dist': 20,
             'ld': _s.ld,  # in
             'ld_offset_loc': [0, 0],  # NOT USED!!!
             'ld_offset_scale': [125, 5],
             'rgb_start': [0.4, 0.7],  #
             'rgb_theta_diff_c': 0.2,
             'rgb_v_diff_c': 0.001,
-            'up_down': 'up'
-            # NEED ZORDER
+            'up_down': 'up',
+            'out_screen': False,
+            'zorder': 1000
         }
-
-        if P.POST:
-            sps_gi['alpha_y_range'] = [1, 1]
-            sps_gi['rgb_start'] = [0.7, 0.99]
-            sps_gi['r_f_d_loc'] = [0.3]
-            sps_gi['r_f_d_scale'] = [0.05]
-            sps_gi['theta_loc'] = np.pi / 2
-            sps_gi['theta_scale'] = 0.1
-            sps_gi['v_loc'] = 220
-            sps_gi['v_scale'] = 10
-            sps_gi['zorder'] = 1000
 
         return sps_gi

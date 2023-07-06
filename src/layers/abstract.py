@@ -72,6 +72,9 @@ class AbstractLayer:
                 im_ax.append(ax0.plot(_s.xy[:, 0], _s.xy[:, 1], zorder=_s.gi['zorder'],
                                      alpha=0, color=(_s.R[0], _s.G[0], _s.B[0]))[0])
 
+                # im_ax.append(ax0.plot(_s.xy[:, 0], _s.xy[:, 1], zorder=_s.gi['zorder'],
+                #                       alpha=0, color=(0.1, 0.1, 0.1)))
+
             _s.ax1 = im_ax[_s.index_im_ax]
             return 1, None
         elif _s.drawn == 2:  # continue drawing

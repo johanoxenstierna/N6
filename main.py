@@ -75,7 +75,7 @@ def animate(i):
 
                     ''' EVIL BUG HERE. An F cannot be allowed to init new sp children if old children
                     are still being drawn!!! THIS MEANS F FRAMES_TOT MUST > SP FRAMES TOT'''
-                    if P.A_SPS and sh.id not in ['1']:  # ? on second condition
+                    if P.A_SPS:
                         for sp_key, sp in f.sps.items():
                             assert(sp.f != None)
                             sp.dyn_gen(i)  # YES KEEP THIS: there are thousands of sp and pre-storing xy for all is a bit crazy.
@@ -96,8 +96,10 @@ def animate(i):
                     if drawBool == 0:  # dont draw
                         continue
                     elif drawBool == 1:
-                        mpl_affine(i, f, ax0, im_ax)
-                        im_ax[f.index_im_ax].set_alpha(f.alpha[f.clock])
+                        # mpl_affine(i, f, ax0, im_ax)
+                        # im_ax[f.index_im_ax].set_alpha(f.alpha[f.clock])
+                        im_ax[f.index_im_ax].set_alpha(0)
+                        pass
                     elif drawBool == 2:  # remove
                         prints += "  removing f"
                         decrement_all_index_im_ax(index_removed, shs)
@@ -111,65 +113,9 @@ def animate(i):
                             continue
                         elif drawBoolSP == 1:
                             set_sps(sp, im_ax)
-
                         elif drawBoolSP == 2:
                             prints += "  removing sp"
                             decrement_all_index_im_ax(index_removed, shs)
-
-        if P.A_SPS and 'sps' in sh.gi.child_names:  # SH sps  # 2, 3, 4, 7
-            '''NOT f. OBS MULTIPLE DRAWS AT SAME FRAME ALLOWED HERE
-            THIS IS NOT THERE FOR OTHERS'''
-            # if i in sh.gi.sps_gi_init_frames:
-            #     '''
-            #     DECIDE WHICH GI TO USE
-            #     This sets an init frame for the sp IN THE FUTURE
-            #     Tries 50 times to find a free sp and if it finds one it gets drawn
-            #     according to gi conditions.
-            #     '''
-            #
-            #     if sh.id[0] in ['2', '4']:
-            #         num = P.NUM_SPS_PER_L  # per L
-            #     elif sh.id[0] in ['3']:
-            #         num = P.NUM_SPS_PER_C  # '3'  (0 uses F)
-            #     elif sh.id[0] in ['7']:
-            #         num = P.NUM_SPS_PER_7
-            #     prints += "  trying to add " + str(num) + "sp"
-            #     # num_failed_to_add = 0
-            #     for _ in range(num):  # will crash if no num
-            #         sp = sh.find_free_obj(type='sp')
-            #         if sp != None:
-            #             assert (sp.f == None)  #
-            #             sh.dyn_gen_child_sp(i, sp)  # assigns gi according to frame
-            #         else:
-            #             prints += "  COULDNT add sp"
-
-            # DECIDE FRAME_SS. HERE FRAME_SS IS THE SAME FOR EVERY SP HERE
-            for sp_id, sp in sh.sps.items():
-
-                try:
-                    _ = sp.init_frame
-                except:
-                    sp.init_frame = -999
-
-                if sp.init_frame == i:  # only for sh sp
-                    sp.drawn = 1
-                    sp.set_frame_ss(i, len(sp.xy), dynamic=False)  # THIS SETS FRAME_SS
-
-            # USUAL SET_DATA
-            for sp_id, sp in sh.sps.items():
-                if sp.drawn != 0 and sp.f == None:
-                    sp.set_clock(i)
-                    drawBool, index_removed = sp.ani_update_step(ax0, im_ax, sp=True)
-                    if drawBool == 0:
-                        continue
-                    elif drawBool == 1:
-                        set_sps(sp, im_ax)
-                        # im_ax[sp.index_im_ax].set_alpha(1)
-
-                    elif drawBool == 2:
-                        decrement_all_index_im_ax(index_removed, shs)
-                        continue
-
 
         print(prints)
 
