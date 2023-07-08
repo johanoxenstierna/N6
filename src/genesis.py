@@ -12,7 +12,7 @@ def init_infos():
     '''Creates instance of each info and stores in dict'''
     infos = {}
 
-    top_point6 = [550, 540]
+    top_point6 = [550, 420]
     xs_6 = np.zeros((P.NUM_FS, ), dtype=int)
 
     EXPL_F = 10  # 1300

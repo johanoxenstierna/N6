@@ -56,14 +56,14 @@ class Sh_6_info(ShInfoAbstract):
             'alpha_y_range': [0.5, 1],
             'init_frames': init_frames,  # ONLY FOR THIS TYPE
             'frames_tot': 200,  # MUST BE LOWER THAN SP.FRAMES_TOT. MAYBE NOT. INVOLVED IN BUG
-            'v_loc': 120, 'v_scale': 2,
-            'theta_loc': 0.5 * np.pi - 0.0, 'theta_scale': 0.2,  # unit circle straight up
+            'v_loc': 40, 'v_scale': 5,
+            'theta_loc': 0.5 * np.pi - 0.1, 'theta_scale': 0.3,  # unit circle straight up
             'sp_len_start_loc': 1, 'sp_len_start_scale': 1,
-            'sp_len_stop_loc': 1, 'sp_len_stop_scale': 1,
-            'init_frame_max_dist': 20,
+            'sp_len_stop_loc': 8, 'sp_len_stop_scale': 1,  # this only covers uneven terrain
+            'init_frame_max_dist': 5,
             'ld': _s.ld,  # in
             'ld_offset_loc': [0, 0],  # NOT USED!!!
-            'ld_offset_scale': [125, 5],
+            'ld_offset_scale': [20, 10],  # [125, 5]
             'rgb_start': [0.4, 0.7],  #
             'rgb_theta_diff_c': 0.2,
             'rgb_v_diff_c': 0.001,

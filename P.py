@@ -19,7 +19,7 @@ A_SPS = 1  # sparks  MUST BE 1 (being fixed though)
 A_FS = 1
 
 NUM_SPS_SH = None  #a
-NUM_SPS_F = 50  # used by 0, 5, 6  can be reduced for big bug
+NUM_SPS_F = 30  # used by 0, 5, 6  can be reduced for big bug
 
 # NUM_SPS_L_TOT = 2000  # used by 2, 4   PER PIC!!!
 # NUM_SPS_PER_INIT = 50
@@ -36,7 +36,7 @@ NUM_SPS_F = 50  # used by 0, 5, 6  can be reduced for big bug
 # NUM_SRS_7 = 5  # NUMBER OF REPEATS PER PIC.
 # NUM_SRS_8 = 5  # NUMBER OF REPEATS PER PIC.  HARDCODED
 # NUM_SRS_C = 100  # used by 3. OBS OBS PER PIC, NOT PER C. SRS pics are used by all c
-NUM_FS = 2  # the ones that fill init_frames. TOT: 1000
+NUM_FS = 1  # the ones that fill init_frames. TOT: 1000
 
 NUM_RS_PICS = 150
 NUM_RS_0 = 50  # upper bound

@@ -20,7 +20,8 @@ def simple_projectile(v, theta, frames_tot, rc=1, up_down=None):
     # x = v * np.cos(theta) * t
     # y = v * np.sin(theta) * t - 0.5 * G * t ** 2
 
-    t_flight = 2 * v * np.sin(theta) / G
+    # t_flight = 6 * v * np.sin(theta) / G
+    t_flight = 5 * v * np.sin(theta) / G  # 4 means they land at origin. 5 little bit below
     t = np.linspace(0, t_flight, frames_tot)
 
     # TEST W DIFF FUNCS ===================
@@ -28,9 +29,37 @@ def simple_projectile(v, theta, frames_tot, rc=1, up_down=None):
     #     t_flight = 0.05 * v * np.sin(theta) / G
     #     t = np.linspace(0, t_flight, frames_tot)
     # ======================================
+    # v = np.linspace(v * 1.1, v * 0.3, num=len(t))
+    # x = v * np.cos(theta) * t
+    x = v * np.cos(theta) * t ** 1.5
+    # y = v * np.sin(theta) * 2 * t - 0.5 * G * t ** 2
+    y = v * np.sin(theta) * 2 * t - 0.5 * G * t ** 2  # OBS OBS this affect both up and down equally
 
-    x = v * np.cos(theta) * t
-    y = v * np.sin(theta) * rc * t - 0.5 * G * t ** 2
+    '''y max is always in middle. so manually set v0 to lower than v1'''
+    # x0 = v * np.cos(theta) * t
+    # x1 = 2 * v * np.cos(theta) * t
+    #
+    # y0 = v * np.sin(theta) * t - 0.5 * G * t ** 2
+    # y1 = v * np.sin(theta) * t - 0.5 * G * t ** 2.2
+
+
+    # geomx0 = np.geomspace(0.001, 1, int(len(y) / 2))
+    # geomx1 = np.geomspace(1, 200, int(len(y) / 2))
+    # geomy0 = np.linspace(0, 1, int(len(y) / 2))
+    # geomy1 = -np.linspace(0.001, 20, int(len(y) / 2))
+
+    # if theta < 0.5 * np.pi:
+    #     x[:100] = x[:100] + geomx0
+    #     x[100:] = x[100:] + geomx1
+    # else:
+    #     raise Exception("Asdf")
+        # x[:100] = x[:100] + geomx0
+        # x[100:] = x[100:] + geomx1
+
+    # A = y[:100] * geomy0
+    # B = y[100:] * geomy1
+
+    dff = 5
 
     # TEST W DIFF FUNCS ===================
     '''Linear'''
@@ -53,36 +82,28 @@ def simple_projectile(v, theta, frames_tot, rc=1, up_down=None):
     return xy
 
 
-def shift_projectile(xy_t, origin=None, frames_tot_d=None, up_down=None, r_f_d_type=''):  # def shift_projectile(xy_t, origin=None, frames_tot_d=None, gi=None):
-    """shifts it to desired xy
+# def shift_projectile(xy_t, origin=None, frames_tot_d=None, up_down=None, r_f_d_type=''):
+def shift_projectile(xy_t, origin=None, frames_tot_d=None, gi=None):
+    """
+    OBS N6 = its hardcoded for sp
+    shifts it to desired xy
     y is flipped because 0 y is at top and if flip_it=True
     """
 
     xy = copy.deepcopy(xy_t)
 
-    # if gi['out_screen']:
-    #     xy = xy[:int(len(xy) / 2), :int(len(xy) / 2)]
-    #     gi['frames_tot'] = len(xy)
+    if gi['out_screen']:
+        xy = xy[:int(len(xy) / 2), :int(len(xy) / 2)]
+        gi['frames_tot'] = len(xy)
 
     '''
     y0: First it needs to be flipped bcs all values are pos to start with, but it needs to be neg.  
     '''
-    if up_down == 'up' or up_down == 'down':
-        xy[:, 1] *= -1  # flip it. Now all neg
-
-    # if gi['up_down'] == 'up' or gi['up_down'] == 'down':
+    # if up_down == 'up' or up_down == 'down':
     #     xy[:, 1] *= -1  # flip it. Now all neg
 
-    '''Shift start y to upper portion of curve. 
-    Find delta to t origin
-    OBS OBS OBS: This is currently only set up for right motion'''
-
-    # if r_f_d_type == 'before':
-    #     xy = xy[:frames_tot_d, :]
-    # elif r_f_d_type == 'after':
-    #     xy = xy[frames_tot_d - 2:, :]
-    # else:
-    #     raise Exception("r_f_d_type needs setting")
+    if gi['up_down'] == 'up' or gi['up_down'] == 'down':
+        xy[:, 1] *= -1  # flip it. Now all neg
 
     try:
         x_shift_r_f_d = xy[0, 0]  # TODO: change for left motion
@@ -98,6 +119,8 @@ def shift_projectile(xy_t, origin=None, frames_tot_d=None, up_down=None, r_f_d_t
     of frames is shown.
     '''
     xy[:, 1] += origin[1] - y_shift_r_f_d
+
+
 
     return xy
 

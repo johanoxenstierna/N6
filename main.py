@@ -61,6 +61,8 @@ def animate(i):
         if P.A_FS and 'fs' in sh.gi.child_names:  # 0, 5, 6!!!
             if i in sh.gi.fs_gi['init_frames']:
 
+                '''OBS. Mulitple fs cant fire on the same frame!'''
+
                 f = sh.find_free_obj(type='f')
                 if f != None:
                     prints += "  adding f"
@@ -76,20 +78,19 @@ def animate(i):
                     ''' EVIL BUG HERE. An F cannot be allowed to init new sp children if old children
                     are still being drawn!!! THIS MEANS F FRAMES_TOT MUST > SP FRAMES TOT'''
                     if P.A_SPS:
-                        for sp_key, sp in f.sps.items():
+                        for sp_key, sp in f.sps.items():  # THEY ARE ONLY INITED HERE
                             assert(sp.f != None)
                             sp.dyn_gen(i)  # YES KEEP THIS: there are thousands of sp and pre-storing xy for all is a bit crazy.
-                            sp.drawn = 1
+                            # sp.drawn = 1
                             prints += "  adding sp"
-                            sp.set_frame_ss(i, sp.gi['frames_tot'], dynamic=False)
+                            # sp.set_frame_ss(i, sp.gi['frames_tot'], dynamic=False)
 
-                        # adf = 5
                 else:
                     prints += "  no free f"
 
             for f_id, f in sh.fs.items():
 
-                if f.drawn != 0:  # OBS the 4 from above is needed only the very first iteration it becomes visible
+                if f.drawn != 0:  #
                     f.set_clock(i)
 
                     drawBool, index_removed = f.ani_update_step(ax0, im_ax)
@@ -104,18 +105,21 @@ def animate(i):
                         prints += "  removing f"
                         decrement_all_index_im_ax(index_removed, shs)
 
-                for sp_id, sp in f.sps.items():  # CHILD OF f
-                    assert(sp.f != None)
-                    if sp.drawn != 0:
-                        sp.set_clock(i)
-                        drawBoolSP, index_removed = sp.ani_update_step(ax0, im_ax, sp=True)
-                        if drawBoolSP == 0:
-                            continue
-                        elif drawBoolSP == 1:
-                            set_sps(sp, im_ax)
-                        elif drawBoolSP == 2:
-                            prints += "  removing sp"
-                            decrement_all_index_im_ax(index_removed, shs)
+                    for sp_id, sp in f.sps.items():  # CHILD OF f
+                        assert(sp.f != None)
+                        if sp.init_frame == i:
+                            sp.drawn = 1
+                            sp.set_frame_ss(i, sp.gi['frames_tot'], dynamic=False)
+                        if sp.drawn != 0:  # This is the new condition. Hence it doesnt use f here. So f drawn does not have to be true.
+                            sp.set_clock(i)
+                            drawBoolSP, index_removed = sp.ani_update_step(ax0, im_ax, sp=True)
+                            if drawBoolSP == 0:
+                                continue
+                            elif drawBoolSP == 1:
+                                set_sps(sp, im_ax)
+                            elif drawBoolSP == 2:
+                                prints += "  removing sp"
+                                decrement_all_index_im_ax(index_removed, shs)
 
         print(prints)
 
