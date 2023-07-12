@@ -164,7 +164,14 @@ def set_sps(sp, im_ax):
 
 	sp_len_cur = sp.sp_lens[sp.clock]
 
-	if sp.clock < sp_len_cur + 1:
+	if sp.gi['special']:
+		if sp.clock > 999:
+			return
+
+	if sp.clock > 225:
+		return
+
+	if sp.clock < sp_len_cur + 1:  # beginning
 		# asd = im_ax[sp.index_im_ax]
 		# im_ax[sp.index_im_ax].set_data(50, 60)
 		# pass
@@ -177,8 +184,10 @@ def set_sps(sp, im_ax):
 	# ff = sp.xy[:(sp.clock + 2), 0]
 	# bb = sp.xy[:(sp.clock + 2), 1]
 	else:
-		im_ax[sp.index_im_ax].set_data(sp.xy[sp.clock - sp_len_cur:sp.clock, 0],
-		                               sp.xy[sp.clock - sp_len_cur:sp.clock, 1])
+		# im_ax[sp.index_im_ax].set_data(sp.xy[sp.clock - sp_len_cur:sp.clock, 0],
+		#                                sp.xy[sp.clock - sp_len_cur:sp.clock, 1])
+		im_ax[sp.index_im_ax].set_data(sp.xy[sp.clock:sp.clock + sp_len_cur, 0],
+		                               sp.xy[sp.clock:sp.clock + sp_len_cur, 1])
 	try:
 		# pass
 		im_ax[sp.index_im_ax].set_color((sp.R[sp.clock], sp.G[sp.clock], sp.B[sp.clock]))

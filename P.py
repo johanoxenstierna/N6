@@ -19,7 +19,7 @@ A_SPS = 1  # sparks  MUST BE 1 (being fixed though)
 A_FS = 1
 
 NUM_SPS_SH = None  #a
-NUM_SPS_F = 30  # used by 0, 5, 6  can be reduced for big bug
+NUM_SPS_F = 100  # used by 0, 5, 6  can be reduced for big bug
 
 # NUM_SPS_L_TOT = 2000  # used by 2, 4   PER PIC!!!
 # NUM_SPS_PER_INIT = 50

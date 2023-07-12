@@ -49,24 +49,26 @@ class Sp(AbstractLayer, AbstractSSS):
 
         _s.finish_info()
 
-
         '''New: Shift y values down linearly'''
 
         y_do_shift_start = 50
         y_do_shift_stop = 100
         y_do_shift = random.randint(y_do_shift_start, y_do_shift_stop)
 
-        _s.set_frames_tot(y_do_shift)
+        _s.set_frames_tot(y_do_shift)  # SAME
 
         _s.xy_t = simple_projectile(v=_s.gi['v'], theta=_s.gi['theta'], rc=1,
-                                    frames_tot=_s.gi['frames_tot'], up_down=_s.gi['up_down'])
+                                    frames_tot=_s.gi['frames_tot'], up_down=_s.gi['up_down'], gi=_s.gi)
 
         _s.xy = shift_projectile(_s.xy_t, origin=(_s.gi['ld'][0] + _s.gi['ld_offset'][0],
                                                   _s.gi['ld'][1] + _s.gi['ld_offset'][1]),
                                  frames_tot_d=_s.gi['frames_tot'],
                                  gi=_s.gi)
 
-        _s.sp_lens = _s.set_sp_lens(y_do_shift)
+        '''Regenerate y based on theta. If theta is close to pi/2, then create linspace for y after top, with 
+        fewer frames than frames_tot. Update frames_tot'''
+
+        _s.sp_lens = _s.set_sp_lens(y_do_shift)  # PERHAPS THETA INSTEAD?
 
         # y_do_shifts_input = np.linspace(0, y_do_shift, len(_s.xy))
         # y_do_shifts_max = 400 ** 1.05
@@ -89,8 +91,6 @@ class Sp(AbstractLayer, AbstractSSS):
 
         brkp = 5
         '''Add check to see whether sp ends near middle, if so make it faster'''
-
-
 
         # _s.xy = shift_projectile(_s.xy_t, origin=(_s.gi['ld'][0] + _s.gi['ld_offset'][0],
         #                                           _s.gi['ld'][1] + _s.gi['ld_offset'][1]),
@@ -145,10 +145,10 @@ class Sp(AbstractLayer, AbstractSSS):
 
         dist_to_straight_up = abs(theta - np.pi / 2)
         # _s.gi['frames_tot'] = int(_s.gi['frames_tot'] - dist_to_straight_up * 10)  # relates to speed
-        # _s.gi['v'] = _s.gi['v'] - 100 * dist_to_straight_up * 0.2  # the further from middle, the less
+        # _s.gi['v'] = _s.gi['v'] + 50 * dist_to_straight_up  # the further from middle, the more. THIS IS ANSWER TO SPECIAL FAST ONES
         _s.gi['v'] = max(30, _s.gi['v'])
 
-        if dist_to_straight_up < 0.1 and _s.gi['v'] > 60:  # frames tot updated elsewhere
+        if dist_to_straight_up < 0.1 and _s.gi['v'] > 45:  # frames tot updated elsewhere
             _s.gi['out_screen'] = True
 
         # _s.gi['r_f_d'] = max(0.001, np.random.normal(loc=_s.gi['r_f_d_loc'], scale=_s.gi['r_f_d_scale']))
@@ -186,8 +186,10 @@ class Sp(AbstractLayer, AbstractSSS):
 
         sp_len_stop = 0.0 * f0 + 1.0 * f1
         '''Assumed range: 100 - 200'''
-        sp_len_stop = max(6, sp_len_stop)
-        sp_len_stop = min(12, sp_len_stop)
+        sp_len_stop = max(3, sp_len_stop)
+        sp_len_stop = min(6, sp_len_stop)
+        if _s.gi['special']:
+            sp_len_stop = 10
         sp_lens = np.linspace(sp_len_start, sp_len_stop, num=_s.gi['frames_tot'], dtype=int)
 
         return sp_lens
