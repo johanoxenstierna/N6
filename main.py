@@ -72,6 +72,7 @@ def animate(i):
                         f.gi['frames_tot'] = how_many
 
                     f.drawn = 1  # this variable can serve multiple purposes (see below, and in set_clock)
+                    f.set_ld_and_theta()
                     sh.f_latest_drawn_id = f.id
                     f.set_frame_ss(i, f.gi['frames_tot'], dynamic=False)  # uses AbstractSSS
 
@@ -87,6 +88,7 @@ def animate(i):
 
                 else:
                     prints += "  no free f"
+                adf = 5
 
             for f_id, f in sh.fs.items():
 
@@ -120,6 +122,8 @@ def animate(i):
                             elif drawBoolSP == 2:
                                 prints += "  removing sp"
                                 decrement_all_index_im_ax(index_removed, shs)
+
+                    asdf = 5
 
         print(prints)
 

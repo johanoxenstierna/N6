@@ -111,45 +111,23 @@ class Sh(AbstractLayer):
         _di = None
         if type == 'f':
             _di = _s.fs
-        elif type == 'sr':
-            _di = _s.srs
-        elif type == 'r':
-            _di = _s.rs
         elif type == 'sp':
             _di = _s.sps
-        elif type == 'l':
-            _list = _s.ls
-        elif type == 'li':
-            _list = _s.lis
 
-        if type not in ['l', 'li']:
-            li_ids = list(_di.keys())
-            random.shuffle(li_ids)  # TODO: REPLACE WITH INDEX FOR SMOKA
+        li_ids = list(_di.keys())
+        random.shuffle(li_ids)  # TODO: REPLACE WITH INDEX FOR SMOKA
 
-            # flag_found = False # only used by smoka
-            for key in li_ids:  # takes the first one it finds
-                obj = _di[key]
-                if obj.drawn == 0:  # object is not drawn
-                    if type == 'f':
-                        id_split_smoka = obj.id.split('_')
-                        id_split_ship_latest_smoka = _s.f_latest_drawn_id.split('_')
-                        if id_split_smoka[2] == id_split_ship_latest_smoka[2]:
-                            continue
+        # flag_found = False # only used by smoka
+        for key in li_ids:  # takes the first one it finds
+            obj = _di[key]
+            if obj.drawn == 0:  # object is not drawn
+                if type == 'f':
+                    id_split_smoka = obj.id.split('_')
+                    id_split_ship_latest_smoka = _s.f_latest_drawn_id.split('_')
+                    if id_split_smoka[2] == id_split_ship_latest_smoka[2]:
+                        continue
 
-                    if type == 'sr' and obj.id[0] == '9':
-                        if i not in obj.gi['init_frames']:
-                            continue
-
-                    return obj
-        elif type in ['l']:  # REPLACE WITH LOOPING MECHANISM. NO, NOT NEEDED
-            for obj in _list:
-                if obj.drawn == 0 and i in obj.gi['init_frames']:  # YES 2nd ONE WORKS! init_frames done in finish_info
-                    return obj
-        elif type in ['li']:
-            random.shuffle(_list)
-            for obj in _list:
-                if obj.drawn == 0 and i in obj.gi['init_frames']:  # YES 2nd ONE WORKS! init_frames done in finish_info
-                    return obj
+                return obj
 
         if type == 'f':  # ??? if return above has not happened it means that none has been found (e.g. if only 1 type available)
             for key in li_ids:

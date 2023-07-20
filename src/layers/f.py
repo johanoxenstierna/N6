@@ -21,25 +21,9 @@ class F(AbstractLayer, AbstractSSS):
         if P.A_SPS:
             _s.sps_gi = sh.gi.sps_gi
 
-        _s.zorder = _s.gi['zorder']
-
         AbstractSSS.__init__(_s, sh, id)
 
         _s.sps = {}  # filled with spark instances (not allowed to generate them from inside here).
-
-        '''In N2 below is generated dynamically (probably because there may be some uncertainty regarding
-        position of sh, but probably not necessary.'''
-
-        _s.scale_vector = np.linspace(_s.gi['scale_ss'][0], _s.gi['scale_ss'][1], _s.gi['frames_tot'])  # USE GI
-        _s.rotation_v = np.linspace(0.01, _s.gi['rad_rot'], num=len(_s.scale_vector))
-
-        alpha_y_range = [0, 0.6]
-        if P.POST:
-            alpha_y_range = [0, 0.01]
-
-        if 'alpha_y_range' in _s.gi:
-            alpha_y_range = _s.gi['alpha_y_range']
-        _s.alpha = gen_alpha(_s, frames_tot=_s.gi['frames_tot'], y_range=alpha_y_range)
 
         adf = 5
 
@@ -57,3 +41,20 @@ class F(AbstractLayer, AbstractSSS):
         # fs_gi['max_ri'] = np.max(_s.extent[:, 1])
 
         return fs_gi
+
+    def set_ld_and_theta(_s):
+
+        pos = np.random.random_integers(0, len(_s.gi['left_offsets']) - 1, 1)[0]
+
+        '''Determine whether its only 2 fs (for testing)'''
+
+        if P.NUM_FS == 2:  # minimum
+            if _s.id[-1] == '0':
+                pos = 0
+            else:
+                pos = 1
+
+        _s.gi['ld'][0] = _s.gi['left_mid'] + _s.gi['left_offsets'][pos]  # random randint
+        _s.gi['theta_loc'] = np.pi / 2 + _s.gi['theta_offsets'][pos]
+
+        _s.gi['ld'][1] = 420

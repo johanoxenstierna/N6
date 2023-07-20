@@ -3,123 +3,51 @@ import random
 import numpy as np
 
 
-def simple_projectile(v, theta, frames_tot, rc=1, up_down=None, gi=None):
+def simple_projectile(gi=None):
     """
     OBS this is for midpoint, i.e. SINGLE PIXEL
     See tutorial for using a patch to make it larger than single pixel
     always assumes origin is at 0, 0, so needs shifting afterwards.
+    ALSO, THIS FUNCTION ALWAYS OUTPUTS LEFTWARD MOTION, UNTIL IT IS SET BELOW
     """
 
     '''HERE TUNE THETA BASED ON V. THETA CLOSE TO 0 -> MORE V'''
 
-    xy = np.zeros((frames_tot, 2))  # MIDPOINT
+    xy = np.zeros((gi['frames_tot'], 2))  # MIDPOINT
 
     G = 9.8
-    # t_flight = 2 * v * np.sin(theta) / G
-    # t = np.linspace(0, t_flight, num_frames)
-    # x = v * np.cos(theta) * t
-    # y = v * np.sin(theta) * t - 0.5 * G * t ** 2
 
     # t_flight = 6 * v * np.sin(theta) / G
-    t_flight = 5 * v * np.sin(theta) / G  # 4 means they land at origin. 5 little bit below
-    t = np.linspace(0, t_flight, frames_tot)
-    t_lin = np.linspace(0, t_flight, frames_tot)
-    t_geo = np.geomspace(1.001, t_flight * 2, frames_tot)
+    t_flight = 5 * gi['v'] * np.sin(gi['theta']) / G  # 4 means they land at origin. 5 little bit below
+    t = np.linspace(0, t_flight, gi['frames_tot'])
+    t_lin = np.linspace(0, t_flight, gi['frames_tot'])
+    t_geo = np.geomspace(0.08, t_flight ** 1.2, gi['frames_tot'])
 
-    # TEST W DIFF FUNCS ===================
-    # if up_down == 'down':
-    #     t_flight = 0.05 * v * np.sin(theta) / G
-    #     t = np.linspace(0, t_flight, frames_tot)
-    # ======================================
-    # v = np.linspace(v * 1.1, v * 0.3, num=len(t))
-    x = v * np.cos(theta) * t
-    x_lin = v * np.cos(theta) * t
-    x_geo = v * np.cos(theta) * t_geo
-    if theta < np.pi / 2:
-        x = 0.1 * x_lin * t_lin + 0.05 * x_lin * x_geo
-    else:
-        x = 0.1 * x_lin * t_lin + 0.05 * x_lin * -x_geo
+    x = gi['v'] * np.cos(gi['theta']) * t
+    x_lin = gi['v'] * np.cos(gi['theta']) * t
+    x_geo = gi['v'] * np.cos(gi['theta']) * t_geo
+    x = 0.0001 * x_lin * t_lin + 0.2 * x_lin * x_geo
+
+    '''If theta is close enough '''
+    # if gi['dist_to_theta_0'] < 0.1:
+    #     if gi['theta'] < gi['theta_loc']:
+    #         x = -x
     # x = v * np.cos(theta) * t ** 1
     # y = v * np.sin(theta) * 2 * t - 0.5 * G * t ** 2
-    y_lin = v * np.sin(theta) * 2 * t_lin - 0.5 * G * t_lin ** 2  # OBS OBS this affect both up and down equally
-    y_geo = v * np.sin(theta) * 2 * t_geo - 0.5 * G * t_geo ** 2
-    #
-    y = 1.3 * y_geo
 
-    # y = np.linspace(0, 200, num=frames_tot)
+    y_lin = gi['v'] * np.sin(gi['theta']) * 2 * t_lin - 0.5 * G * t_lin ** 2  # OBS OBS this affect both up and down equally
+    y_geo = gi['v'] * np.sin(gi['theta']) * 2 * t_geo - 0.5 * G * t_geo ** 2
 
-    '''y max is always in middle. so manually set v0 to lower than v1'''
-    # x0 = v * np.cos(theta) * t
-    # x1 = 2 * v * np.cos(theta) * t
-    #
-    # y0 = v * np.sin(theta) * t - 0.5 * G * t ** 2
-    # y1 = v * np.sin(theta) * t - 0.5 * G * t ** 2.2
-
-
-    # geomx0 = np.geomspace(0.001, 1, int(len(y) / 2))
-    # geomx1 = np.geomspace(1, 200, int(len(y) / 2))
-    # geomy0 = np.linspace(0, 1, int(len(y) / 2))
-    # geomy1 = -np.linspace(0.001, 20, int(len(y) / 2))
-
-    # if theta < 0.5 * np.pi:
-    #     x[:100] = x[:100] + geomx0
-    #     x[100:] = x[100:] + geomx1
-    # else:
-    #     raise Exception("Asdf")
-        # x[:100] = x[:100] + geomx0
-        # x[100:] = x[100:] + geomx1
-
-    # A = y[:100] * geomy0
-    # B = y[100:] * geomy1
-
-    frames_tot_h = int(frames_tot / 2)
-
-    '''This should be done using random distribution'''
-    # if abs(theta - np.pi / 2) < 999:
-    #     y_new_start = y[frames_tot_h]
-    #     y_new = v * np.sin(theta) * 2 * t - 0.5 * G * t ** 2.3
-    #     y_shift = abs(y_new[frames_tot_h] - y_new_start)
-    #     y_new2 = y_new + y_shift  # shift em down. Plus since y_new is neg
-    #     y[frames_tot_h:] = y_new2[frames_tot_h:]
-    #
-    #     x_new_start = x[frames_tot_h]
-    #     x_new = v * np.cos(theta) * t ** 2.4
-    #     x_shift = abs(x_new[frames_tot_h] - x_new_start)
-    #     if theta - np.pi / 2 < 0:
-    #         x_new2 = x_new - x_shift  # shift em down. Plus since y_new is neg
-    #     else:
-    #         x_new2 = x_new + x_shift
-    #     x[frames_tot_h:] = x_new2[frames_tot_h:]
-    #
-    #     gi['special'] = True
-
-        # adf = 5
-
-    dff = 5
-
-    # TEST W DIFF FUNCS ===================
-    '''Linear'''
-    # x = -v * t  * 0.2 * np.sin(theta)
-    # y = -v * t  * 0.3 * np.cos(theta)
-
-    # if up_down == 'down':
-    #     x = v * np.cos(theta) * t
-    #     y = -v * np.sin(theta - 0.5) * rc * t - 0.5 * G * t ** 2
-
-    # x = v * np.sin(theta) * t
-    # y = v * np.cos(theta) * rc * t - 0.5 * G * t ** 2
-    # =====================================
-
+    y = 0.3 * y_lin + 0.7 * y_geo
 
     xy[:, 0] = x
     xy[:, 1] = y
-
 
     return xy
 
 
 # def shift_projectile(xy_t, origin=None, frames_tot_d=None, up_down=None, r_f_d_type=''):
-def shift_projectile(xy_t, origin=None, frames_tot_d=None, gi=None):
+def shift_projectile(xy_t, origin=None, gi=None):
     """
     OBS N6 = its hardcoded for sp
     shifts it to desired xy
@@ -219,3 +147,63 @@ def falling_projectile(gi):
 
     return xy
 
+
+# DEPR
+'''y max is always in middle. so manually set v0 to lower than v1'''
+# x0 = v * np.cos(theta) * t
+# x1 = 2 * v * np.cos(theta) * t
+#
+# y0 = v * np.sin(theta) * t - 0.5 * G * t ** 2
+# y1 = v * np.sin(theta) * t - 0.5 * G * t ** 2.2
+
+
+# geomx0 = np.geomspace(0.001, 1, int(len(y) / 2))
+# geomx1 = np.geomspace(1, 200, int(len(y) / 2))
+# geomy0 = np.linspace(0, 1, int(len(y) / 2))
+# geomy1 = -np.linspace(0.001, 20, int(len(y) / 2))
+
+# if theta < 0.5 * np.pi:
+#     x[:100] = x[:100] + geomx0
+#     x[100:] = x[100:] + geomx1
+# else:
+#     raise Exception("Asdf")
+    # x[:100] = x[:100] + geomx0
+    # x[100:] = x[100:] + geomx1
+
+# A = y[:100] * geomy0
+# B = y[100:] * geomy1
+
+'''This should be done using random distribution'''
+# if abs(theta - np.pi / 2) < 999:
+#     y_new_start = y[frames_tot_h]
+#     y_new = v * np.sin(theta) * 2 * t - 0.5 * G * t ** 2.3
+#     y_shift = abs(y_new[frames_tot_h] - y_new_start)
+#     y_new2 = y_new + y_shift  # shift em down. Plus since y_new is neg
+#     y[frames_tot_h:] = y_new2[frames_tot_h:]
+#
+#     x_new_start = x[frames_tot_h]
+#     x_new = v * np.cos(theta) * t ** 2.4
+#     x_shift = abs(x_new[frames_tot_h] - x_new_start)
+#     if theta - np.pi / 2 < 0:
+#         x_new2 = x_new - x_shift  # shift em down. Plus since y_new is neg
+#     else:
+#         x_new2 = x_new + x_shift
+#     x[frames_tot_h:] = x_new2[frames_tot_h:]
+#
+
+    # adf = 5
+
+dff = 5
+
+# TEST W DIFF FUNCS ===================
+'''Linear'''
+# x = -v * t  * 0.2 * np.sin(theta)
+# y = -v * t  * 0.3 * np.cos(theta)
+
+# if up_down == 'down':
+#     x = v * np.cos(theta) * t
+#     y = -v * np.sin(theta - 0.5) * rc * t - 0.5 * G * t ** 2
+
+# x = v * np.sin(theta) * t
+# y = v * np.cos(theta) * rc * t - 0.5 * G * t ** 2
+# =====================================
