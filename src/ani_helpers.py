@@ -168,7 +168,7 @@ def set_sps(sp, im_ax):
 		if sp.clock > 999:
 			return
 
-	if sp.clock > 170:
+	if sp.clock > 190:
 		return
 
 	if sp.clock < sp_len_cur + 1:  # beginning

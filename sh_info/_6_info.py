@@ -40,16 +40,16 @@ class Sh_6_info(ShInfoAbstract):
             'frame_ss': None,  # simpler with this
             'ld': [None, None],  # set at init
             'left_mid': 640,
-            'left_offsets': list(np.linspace(-200, 200, num=20)),
+            'left_offsets': list(np.linspace(-50, 50, num=20)),
             'downs_sps': [],
             'theta_loc': None,  # set at init
-            'theta_offsets': list(np.linspace(0.2, -0.2, num=20)), #[0.3, 0.1, -0.2, -0.6],
+            'theta_offsets': list(np.linspace(0.3, -0.3, num=20)), #[0.3, 0.1, -0.2, -0.6],
             # 'x_mov': list(np.linspace(0, -15, num=FRAMES_TOT)),  # SPECIAL
             'zorder': 5
         }
 
         if P.NUM_FS == 2:
-            fs_gi['left_offsets'] = [-5, 5]
+            fs_gi['left_offsets'] = [-10, 10]
 
         return fs_gi
 
@@ -62,15 +62,15 @@ class Sh_6_info(ShInfoAbstract):
             'alpha_y_range': [0.3, 0.8],
             'init_frames': init_frames,  # ONLY FOR THIS TYPE
             'frames_tot': 200,  # MUST BE LOWER THAN SP.FRAMES_TOT. MAYBE NOT. INVOLVED IN BUG
-            'v_loc': 55, 'v_scale': 5,
-            'theta_scale': 0.2,  # 0.1 unit circle straight up
+            'v_loc': 40, 'v_scale': 8,  # THIS IS HOW HIGH THEY GO (not how far down)
+            'theta_scale': 0.3,  # 0.1 unit circle straight up
             'sp_len_start_loc': 1, 'sp_len_start_scale': 1,
             'sp_len_stop_loc': 4, 'sp_len_stop_scale': 1,  # this only covers uneven terrain
-            'init_frame_max_dist': 5,
+            'init_frame_max_dist': 40,
             'special': False,
             'ld': [None, None],  # set by f
             'ld_offset_loc': [0, 0],  # NEW: Assigned when inited
-            'ld_offset_scale': [10, 5],  # [125, 5]
+            'ld_offset_scale': [5, 3],  # [125, 5]
             'rgb_start': [0.4, 0.7],  #
             'rgb_theta_diff_c': 0.2,
             'rgb_v_diff_c': 0.001,

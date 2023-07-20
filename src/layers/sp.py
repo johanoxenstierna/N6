@@ -53,62 +53,26 @@ class Sp(AbstractLayer, AbstractSSS):
 
         _s.xy_t = simple_projectile(gi=_s.gi)
 
-        if _s.gi['ld'][0] < _s.f.gi['left_mid']:
+        if _s.gi['ld'][0] < _s.f.gi['left_mid']:  # flip x values
             _s.xy_t[:, 0] = -_s.xy_t[:, 0]
 
         _s.xy = shift_projectile(_s.xy_t, origin=(_s.gi['ld'][0] + _s.gi['ld_offset'][0],
-                                                  _s.gi['ld'][1] + _s.gi['ld_offset'][1]),
-                                 gi=_s.gi)
+                                                  _s.gi['ld'][1] + _s.gi['ld_offset'][1]), gi=_s.gi)
 
-
-
-        '''Regenerate y based on theta. If theta is close to pi/2, then create linspace for y after top, with 
-        fewer frames than frames_tot. Update frames_tot'''
+        '''out_screen if xy outside'''
+        neg = np.argwhere(_s.xy[:, 1] < 0)
+        if len(neg) > 20:
+            _s.xy[neg[0, 0]:, 1] = -100  # [0, 0] cuz it comes as a single col
 
         _s.sp_lens = _s.set_sp_lens()  # PERHAPS THETA INSTEAD?
 
         _s.init_frame = _s.set_init_frame(i)
 
 
-        # y_do_shifts_input = np.linspace(0, y_do_shift, len(_s.xy))
-        # y_do_shifts_max = 400 ** 1.05
-        # y_do_shifts = y_do_shifts_input ** 1.2
-        #
-        # x_shift_input = np.linspace(0, 100, len(_s.xy))
-        # x_shifts = x_shift_input ** 1.3
-        #
-        # _s.xy[:, 1] += y_do_shifts.T
-        #
-        # for i in range(len(_s.xy) - 1):
-        #     x = _s.xy[i, 0]
-        #     x_shift = x_shifts[i]
-        #     # if x < _s.gi['ld'][0]:
-        #     if x < _s.xy[i + 1, 0]:
-        #         _s.xy[i, 0] -= x_shift
-        #     else:
-        #         _s.xy[i, 0] += x_shift
-
-
-        '''Add check to see whether sp ends near middle, if so make it faster'''
-
-        # _s.xy = shift_projectile(_s.xy_t, origin=(_s.gi['ld'][0] + _s.gi['ld_offset'][0],
-        #                                           _s.gi['ld'][1] + _s.gi['ld_offset'][1]),
-        #                          frames_tot_d=frames_tot_and_d,
-        #                          up_down=_s.gi['up_down'],
-        #                          r_f_d_type=before_after)
-
-        # _s.alphas = np.linspace(0.6, 0.0, num=len(_s.xy))
-
-        # if _s.f != None:
         _s.alphas = gen_alpha(_s, frames_tot=len(_s.xy), y_range=_s.gi['alpha_y_range'])
 
-        # _s.alphas = np.sin(list(range(0, int(_s.gi['frames_tot'] / 2 * np.pi))))
-        if _s.alphas[0] > 0.3:
-            asdf = 5
         assert (len(_s.alphas) == len(_s.xy))
-        # assert (_s.gi['frames_tot'] == len(_s.alphas))
 
-        # zorder set from gi in abstract class
 
     def set_init_frame(_s, i):
 
@@ -119,12 +83,9 @@ class Sp(AbstractLayer, AbstractSSS):
         if P.NUM_FS == 2:
             pass
         else:
-            if _s.gi['dist_to_theta_loc'] > 0.15:
-                init_frame += 40
-
-
-
-        # _s.gi['r_f_d_type'] = 'after'  # after means what is kept
+            pass
+            # if _s.gi['dist_to_theta_loc'] > 0.15:
+            #     init_frame += 40
 
         return init_frame
 
@@ -143,16 +104,17 @@ class Sp(AbstractLayer, AbstractSSS):
         _s.gi['v'] = abs(np.random.normal(loc=_s.gi['v_loc'], scale=_s.gi['v_scale']))
 
         _s.gi['theta'] = np.random.normal(loc=_s.gi['theta_loc'], scale=_s.gi['theta_scale'])  # + np.pi / 2
-        _s.gi['theta'] = max(_s.gi['theta_loc'] - 0.23, _s.gi['theta'])  # theta cannot be lower than
-        _s.gi['theta'] = min(_s.gi['theta_loc'] + 0.23, _s.gi['theta'])  # theta cannot be higher than
+
+        # _s.gi['theta'] = max(_s.gi['theta_loc'] - 0.23, _s.gi['theta'])  # theta must be larger than
+        # _s.gi['theta'] = min(_s.gi['theta_loc'] + 0.23, _s.gi['theta'])  # theta must be lower than
 
         # TODO: theta also needs to depend on left
 
         _s.gi['dist_to_theta_loc'] = abs(_s.gi['theta'] - _s.gi['theta_loc'])
         _s.gi['dist_to_theta_0'] = abs(_s.gi['theta'] - np.pi / 2)
 
-        if _s.gi['dist_to_theta_0'] < 0.1 and _s.gi['v'] > _s.gi['v_loc'] + _s.gi['v_loc'] * 0.01:  # frames tot updated elsewhere
-            _s.gi['out_screen'] = True
+        # if _s.gi['dist_to_theta_0'] < 0.2 and _s.gi['v'] > _s.gi['v_loc'] + 0.1 * _s.gi['v_loc']:  # frames tot updated elsewhere
+        #     _s.gi['out_screen'] = True
 
         _s.gi['ld_offset'] = [np.random.normal(loc=_s.gi['ld_offset_loc'][0], scale=_s.gi['ld_offset_scale'][0]),
                               np.random.normal(loc=_s.gi['ld_offset_loc'][1], scale=_s.gi['ld_offset_scale'][1])]
@@ -194,13 +156,13 @@ class Sp(AbstractLayer, AbstractSSS):
 
         sp_len_stop = 0.0 * f0 + 1.0 * f1  # THE MORE DOWN SHIFT, THE LARGER
         '''Assumed range: 100 - 200'''
-        sp_len_stop = max(3, sp_len_stop)
-        sp_len_stop = min(5, sp_len_stop)
+        sp_len_stop = max(2, sp_len_stop)
+        sp_len_stop = min(4, sp_len_stop)
         if _s.gi['special']:  # NOT USED
             sp_len_stop = 80
 
         if _s.gi['dist_to_theta_0'] > 0.1 and _s.gi['v'] > _s.gi['v_loc']:  # fast ones to side
-            sp_len_stop = 8  # this is TRICKY
+            sp_len_stop = 3  # this is TRICKY
 
         sp_lens = np.linspace(sp_len_start, sp_len_stop, num=_s.gi['frames_tot'], dtype=int)
 
