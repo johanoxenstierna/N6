@@ -25,28 +25,14 @@ class GenLayers:
         _s.PATH_IMAGES = './images/processed/'
         # _s.ch = ch
 
-    def gen_backgr(_s, ax, im_ax):
+    def gen_backgr(_s, ax0, im_ax, im_ax2):
 
-        im_ax.append(ax.imshow(_s.pics['backgr_d'], zorder=1, alpha=1))
+        if P.ARS == 0:
+            im_ax2.append(ax0.imshow(_s.pics['backgr_d'], zorder=1, alpha=1))  # index 0
+        else:
+            im_ax2.append(ax0.imshow(_s.pics['backgr_ars'], zorder=2, alpha=1))  # index 1
 
-        LEFT = 385
-        TOP = 330
-        # im_ax.append(ax.imshow(_s.pics['volc_d'], zorder=100, alpha=1,
-        #                        extent=[LEFT, LEFT + _s.pics['volc_d'].shape[1], RIGHT, RIGHT + _s.pics['volc_d'].shape[0]]))
-        #
-        # im_ax.append(ax.imshow(_s.pics['volc_d'], zorder=100, alpha=1,
-        #                        extent=[LEFT, LEFT + _s.pics['volc_d'].shape[1], TOP,
-        #                                TOP + _s.pics['volc_d'].shape[0]]))
-
-        # im_ax.append(ax.imshow(_s.pics['volc_l'], zorder=100, alpha=0,
-        #                        extent=[36, 36 + _s.pics['volc_l'].shape[1], 44, 44 + _s.pics['volc_l'].shape[0]]))
-
-
-        # im_ax[1].set_extent([])
-        # im_ax.append(ax.imshow(_s.pics['frame'], zorder=99999))
-        # if P.MAP_SIZE == 's0':
-            # pass
-        ax.axis([0, P.MAP_DIMS[0], P.MAP_DIMS[1], 0])
+        ax0.axis([0, P.MAP_DIMS[0], P.MAP_DIMS[1], 0])
             # ax.axis([-30, 254, 133, -30])
             # ax.axis([0, 214, 0, 181])
             # ax.axis([0, 214, 181, 0])
@@ -55,7 +41,7 @@ class GenLayers:
         #     ax.axis([0, 1280, 0, 720])
         # ax.invert_yaxis()  # ONLY IF SHIPS?
         # ax.grid()
-        ax.axis('off')  # TURN ON FOR FINAL
+        ax0.axis('off')  # TURN ON FOR FINAL
 
     def gen_shs(_s, ax, im_ax):
         """

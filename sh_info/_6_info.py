@@ -1,11 +1,11 @@
 import copy
 
-from sh_info.shInfoAbstract import ShInfoAbstract
+# from sh_info.shInfoAbstract import ShInfoAbstract
 import P as P
 import random
 import numpy as np
 
-class Sh_6_info(ShInfoAbstract):
+class Sh_6_info:
     """
     Basically this is the json replacement (also chronicle to some extent).
     Just very basic stuff
@@ -59,14 +59,14 @@ class Sh_6_info(ShInfoAbstract):
         THEIR INIT FRAMES CAN BE SET BY F THOUGH.
         """
         sps_gi = {
-            'alpha_y_range': [0.3, 0.8],
+            'alpha_y_range': [0.5, 1.0],
             'init_frames': init_frames,  # ONLY FOR THIS TYPE
             'frames_tot': 200,  # MUST BE LOWER THAN SP.FRAMES_TOT. MAYBE NOT. INVOLVED IN BUG
-            'v_loc': 40, 'v_scale': 8,  # THIS IS HOW HIGH THEY GO (not how far down)
-            'theta_scale': 0.3,  # 0.1 unit circle straight up
+            'v_loc': 40, 'v_scale': 2,  # 50 THIS IS HOW HIGH THEY GO (not how far down)
+            'theta_scale': 0.2,  # 0.1 unit circle straight up
             'sp_len_start_loc': 1, 'sp_len_start_scale': 1,
             'sp_len_stop_loc': 4, 'sp_len_stop_scale': 1,  # this only covers uneven terrain
-            'init_frame_max_dist': 40,
+            'init_frame_max_dist': 5,
             'special': False,
             'ld': [None, None],  # set by f
             'ld_offset_loc': [0, 0],  # NEW: Assigned when inited

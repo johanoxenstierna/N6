@@ -194,15 +194,15 @@ if __name__ == '__main__':
 	# Y = _normal(X, mean=1, var=5, y_range=[0, 0.999])
 
 	# SP ALPHA ===========
-	# Y = np.asarray(
-	# 	([_sigmoid(x, grad_magn_inv=- len(X) / 5, x_shift=-3, y_magn=1., y_shift=0) for x in X]))
+	Y = np.asarray(
+		([_sigmoid(x, grad_magn_inv=len(X) / 8, x_shift=3, y_magn=1., y_shift=0) for x in X]))
 
 	# 5 SR ALPHA ==============
 	# Y = np.asarray(
 	# 	([_sigmoid(x, grad_magn_inv=- len(X) / 8, x_shift=-3, y_magn=1., y_shift=0) for x in X]))
 
 	# F ALPHA ============
-	Y = np.asarray(([_sigmoid(x, grad_magn_inv=- len(X) / 15, x_shift=-2, y_magn=1., y_shift=0) for x in X]))
+	# Y = np.asarray(([_sigmoid(x, grad_magn_inv=- len(X) / 15, x_shift=-2, y_magn=1., y_shift=0) for x in X]))
 
 	# SP dots: ld_offset. input is ld_offset_scale. output is offset (needs scaling afterwards)
 	# Y = np.asarray(([_sigmoid(x, grad_magn_inv= -30, x_shift=-3, y_magn=1, y_shift=0) for x in X]))

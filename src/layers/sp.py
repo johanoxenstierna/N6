@@ -24,6 +24,7 @@ class Sp(AbstractLayer, AbstractSSS):
         _s.f = f
         _s.gi = deepcopy(f.sps_gi)
         _s.sp_lens = None
+        _s.ars_bool = 0
 
         AbstractSSS.__init__(_s, sh, _s.id)
 
@@ -72,7 +73,6 @@ class Sp(AbstractLayer, AbstractSSS):
         _s.alphas = gen_alpha(_s, frames_tot=len(_s.xy), y_range=_s.gi['alpha_y_range'])
 
         assert (len(_s.alphas) == len(_s.xy))
-
 
     def set_init_frame(_s, i):
 
@@ -157,12 +157,12 @@ class Sp(AbstractLayer, AbstractSSS):
         sp_len_stop = 0.0 * f0 + 1.0 * f1  # THE MORE DOWN SHIFT, THE LARGER
         '''Assumed range: 100 - 200'''
         sp_len_stop = max(2, sp_len_stop)
-        sp_len_stop = min(4, sp_len_stop)
+        sp_len_stop = min(6, sp_len_stop)
         if _s.gi['special']:  # NOT USED
             sp_len_stop = 80
 
-        if _s.gi['dist_to_theta_0'] > 0.1 and _s.gi['v'] > _s.gi['v_loc']:  # fast ones to side
-            sp_len_stop = 3  # this is TRICKY
+        # if _s.gi['dist_to_theta_0'] > 0.1 and _s.gi['v'] > _s.gi['v_loc']:  # fast ones to side
+        #     sp_len_stop = 3  # this is TRICKY
 
         sp_lens = np.linspace(sp_len_start, sp_len_stop, num=_s.gi['frames_tot'], dtype=int)
 

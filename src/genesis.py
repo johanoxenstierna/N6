@@ -6,7 +6,7 @@ import numpy as np
 import P
 
 # from sh_info import shInfoAbstract, _0_info
-from sh_info import _0_info, _1_info, _2_info, _3_info, _4_info, _5_info, _6_info, _7_info, _8_info, _9_info
+from sh_info import _6_info
 
 def init_infos():
     '''Creates instance of each info and stores in dict'''

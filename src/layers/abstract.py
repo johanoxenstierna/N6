@@ -47,7 +47,7 @@ class AbstractLayer:
         else:  # NEEDED BCS OTHERWISE _s.drawn just stays on 3
             _s.drawn = 0
 
-    def ani_update_step(_s, ax0, im_ax, sp=False):
+    def ani_update_step(_s, ax0, im_ax, im_ax2, sp=False):
         """
         Based on the drawn condition, draw, remove
         If it's drawn, return True (used in animation loop)
@@ -61,23 +61,23 @@ class AbstractLayer:
         TODO: _s.drawn and _s.drawBool one of them are clearly redundant.
         """
 
-        if _s.drawn == 0:  # not drawn,
+        if _s.drawn == 0:  # not drawn, for some reason this is necessary to keep
             return 0, None
         elif _s.drawn == 1: # start
             _s.index_im_ax = len(im_ax)
-            # im_ax[_s.ship_info['id']] = ax.imshow(_s.pic, zorder=1, alpha=1)
-            if sp == False:
+            if sp == False:  # NEEDED FOR PLACEHOLDER F
                 im_ax.append(ax0.imshow(_s.pic, zorder=_s.gi['zorder'], alpha=1, origin='lower', filternorm=False))  #, extent=[0, 14, 0, 19]))
-            else:  # sp
+            else:  # sp PLOTS WHOLE LINE. OBS. THERE IS NO IMSHOW FOR SP
                 im_ax.append(ax0.plot(_s.xy[:, 0], _s.xy[:, 1], zorder=_s.gi['zorder'],
                                      alpha=0, color=(_s.R[0], _s.G[0], _s.B[0]))[0])
-
-                # im_ax.append(ax0.plot(_s.xy[:, 0], _s.xy[:, 1], zorder=_s.gi['zorder'],
-                #                       alpha=0, color=(0.1, 0.1, 0.1)))
-
+                im_ax2.append(ax0.plot(_s.xy[:, 0], _s.xy[:, 1], zorder=_s.gi['zorder'],
+                                     alpha=0.5, color='black')[0])
             _s.ax1 = im_ax[_s.index_im_ax]
             return 1, None
         elif _s.drawn == 2:  # continue drawing
+
+            '''NEW: Checks whether sp is within bounds for ars'''
+
             return 1, None
         elif _s.drawn == 3:  # end drawing
             try:

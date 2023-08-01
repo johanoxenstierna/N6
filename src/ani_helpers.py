@@ -132,70 +132,87 @@ def decrement_all_index_im_ax(index_removed, shs, waves=None):
 				if sp.index_im_ax > index_removed:
 					sp.index_im_ax -= 1
 
-		for sr in sh.srs.values():
-			if sr.index_im_ax != None:
-				if sr.index_im_ax > index_removed:
-					sr.index_im_ax -= 1
 
-		for r in sh.rs.values():
-			if r.index_im_ax != None:
-				if r.index_im_ax > index_removed:
-					r.index_im_ax -= 1
+def set_sps(sp, im_ax, ii, ax0):
 
-		# for l in sh.ls.values():
-		# changed from dict to list
-		for l in sh.ls:
-			if l.index_im_ax != None:
-				if l.index_im_ax > index_removed:
-					l.index_im_ax -= 1
+	if sp.ars_bool == 0:  # NOT ON GROUND
+		sp_len_cur = sp.sp_lens[sp.clock]
 
-		for li in sh.lis:
-			if li.index_im_ax != None:
-				if li.index_im_ax > index_removed:
-					li.index_im_ax -= 1
+		if sp.gi['special']:
+			if sp.clock > 999:
+				raise Exception("todo maybe")
 
-		for c in sh.cs.values():
-			if c.index_im_ax != None:
-				if c.index_im_ax > index_removed:
-					c.index_im_ax -= 1
+		if sp.clock < sp_len_cur + 1:  # beginning
+			xys_cur = [sp.xy[:sp.clock, 0], sp.xy[:sp.clock, 1]]
+		else:
+			xys_cur = [sp.xy[sp.clock:sp.clock + sp_len_cur, 0], sp.xy[sp.clock:sp.clock + sp_len_cur, 1]]
 
+		sp.ars_bool = check_ars(xys_cur, ii)
+		# im_ax[sp.index_im_ax].set_data(xys_cur[0], xys_cur[1])  # SELECTS A SUBSET OF WHATS ALREADY PLOTTED
 
-def set_sps(sp, im_ax):
+		# if P.ARS == 0:  # otherwise
+		im_ax[sp.index_im_ax].set_data(xys_cur)  # SELECTS A SUBSET OF WHATS ALREADY PLOTTED
 
-	sp_len_cur = sp.sp_lens[sp.clock]
-
-	if sp.gi['special']:
-		if sp.clock > 999:
-			return
-
-	if sp.clock > 190:
-		return
-
-	if sp.clock < sp_len_cur + 1:  # beginning
-		# asd = im_ax[sp.index_im_ax]
-		# im_ax[sp.index_im_ax].set_data(50, 60)
-		# pass
-		im_ax[sp.index_im_ax].set_data(sp.xy[:sp.clock, 0], sp.xy[:sp.clock, 1])
-	# im_ax[sp.index_im_ax].set_data(sp.xy[:(sp.clock + 2), 0], sp.xy[:(sp.clock + 2), 1])
-	# aa = np.asarray([sp.xy[:, 0], sp.xy[:, 1]])
-	# im_ax[sp.index_im_ax].set_data(np.asarray([sp.xy[:, 0], sp.xy[:, 1]]))
-
-	# aa = sp.clock + 1
-	# ff = sp.xy[:(sp.clock + 2), 0]
-	# bb = sp.xy[:(sp.clock + 2), 1]
-	else:
-		# im_ax[sp.index_im_ax].set_data(sp.xy[sp.clock - sp_len_cur:sp.clock, 0],
-		#                                sp.xy[sp.clock - sp_len_cur:sp.clock, 1])
-		im_ax[sp.index_im_ax].set_data(sp.xy[sp.clock:sp.clock + sp_len_cur, 0],
-		                               sp.xy[sp.clock:sp.clock + sp_len_cur, 1])
-	try:
-		# pass
+		# try:
 		im_ax[sp.index_im_ax].set_color((sp.R[sp.clock], sp.G[sp.clock], sp.B[sp.clock]))
-		im_ax[sp.index_im_ax].set_alpha(sp.alphas[sp.clock])
-	except:
-		extra_out = ''
-		if sp.f != None:
-			extra_out = sp.f.id
-		raise Exception("im_ax[sp.index_im_ax].set_color((sp.R[sp.clock], sp.G[sp.clock], sp.B[sp.clock])) " + str(sp.id) + \
-		                ' ' + extra_out)
+
+		if P.ARS == 1:  # only show once on ground
+			im_ax[sp.index_im_ax].set_alpha(0)
+		else:
+			im_ax[sp.index_im_ax].set_alpha(sp.alphas[sp.clock])
+		# except:
+		# 	extra_out = ''
+		# 	if sp.f != None:
+		# 		extra_out = sp.f.id
+		# 	raise Exception(
+		# 		"im_ax[sp.index_im_ax].set_color((sp.R[sp.clock], sp.G[sp.clock], sp.B[sp.clock])) " + str(sp.id) + \
+		# 		' ' + extra_out)
+
+	else:  # ON GROUND
+		'''Override FRAME_SS'''
+		# pass
+		if P.ARS == 0:  # in air
+			'''Ok. So conclusion. Good for future but it wont work in this case cuz one d had to create class 
+			instance stump copies of the sp in the air and also modify when stuff gets plotted, to reap the savings.
+			Instead, in this case each arrow gets its own class instance and theyre all kept till the end. If this 
+			eats too much time (due to the remove from im_ax thing, then do the class stump thing
+			REVOLUTION: IM_AX2'''
+			sp.frame_ss[1] = ii + 1  # i.e. it will be removed next frame, so this is last set_data
+
+		else:  # on ground
+			sp.frame_ss[1] = P.FRAMES_STOP - 1
+			im_ax[sp.index_im_ax].set_alpha(1)
+		#
+		# '''Probably needs to be added to im_ax. Each ars is a plot command.
+		# Anyways, create a new plot for ars and then no need to set_data, sfbi'''
+		# # ax0.plot(sp.xy[:, 0], sp.xy[:, 1], zorder=100, alpha=1, color='white')  # (sp.R[0], sp.G[0], sp.B[0])
+		# ax0.plot([50, 100], [200, 300], zorder=100, alpha=1, color='white')  # (sp.R[0], sp.G[0], sp.B[0])
+
+		'''HERE. add xys_cur to ars. ars just plots all the xys_cur '''
+
+
+
+
+def check_ars(xys_cur, ii):
+
+	# if len(xys_cur[0]) < 1:
+	# 	return 1
+	# elif xys_cur[0][-1] > 660:
+	# 	return 2
+
+	if ii > 196:
+		return 1
+
+	return 0
+
+
+def add_to_ars(sp, im_ax):
+
+	'''The main point of this is not to achieve any animation speed-up, which it wont, but rather
+	to make things more sensical.'''
+
+	'''Here add xy limit condition to see whether the arrow is actually relevant for ars'''
+
+	aa = 5
+
 
