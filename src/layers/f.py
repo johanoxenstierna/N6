@@ -18,8 +18,7 @@ class F(AbstractLayer, AbstractSSS):
 
         _s.gi = deepcopy(sh.gi.fs_gi)
 
-        if P.A_SPS:
-            _s.sps_gi = sh.gi.sps_gi
+        # _s.sps_gi = sh.gi.sps_gi  # better do this at sp level
 
         AbstractSSS.__init__(_s, sh, id)
 
@@ -48,7 +47,9 @@ class F(AbstractLayer, AbstractSSS):
 
         '''Determine whether its only 2 fs (for testing)'''
 
-        if P.NUM_FS == 2:  # minimum
+        if P.NUM_FS == 2:
+            ''' minimum. MAKES SURE THEY ARE DISTRIBUTED EVENLY WHEN ONLY 2
+            Also left_offsets are -10, 10 and theta_offsets hardcoded in this case in info'''
             if _s.id[-1] == '0':
                 pos = 0
             else:
@@ -58,3 +59,13 @@ class F(AbstractLayer, AbstractSSS):
         _s.gi['theta_loc'] = np.pi / 2 + _s.gi['theta_offsets'][pos]
 
         _s.gi['ld'][1] = 420
+
+    def set_frame_stop_to_sp_max(_s):
+        """Loop through sps and set max to frame_stop"""
+
+        _max = 0
+        for sp_id, sp in _s.sps.items():
+            if sp.frame_ss[1] > _max:
+                _max = sp.frame_ss[1]
+
+        _s.frame_ss[1] = deepcopy(_max) + 5

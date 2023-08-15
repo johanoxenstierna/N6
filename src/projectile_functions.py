@@ -26,8 +26,8 @@ def simple_projectile(gi=None):
     t_geo_1 = np.geomspace(0.5, t_flight ** 1, gi['frames_tot'])
 
     x = gi['v'] * np.cos(gi['theta']) * t
-    x_lin = abs(gi['v'] * np.cos(gi['theta']) * t_lin)  # THIS CAN BE BOTH POS AND NEG
-    x_geo = abs(gi['v'] * np.cos(gi['theta']) * t_geo_0)  # THIS CAN BE BOTH POS AND NEG
+    x_lin = abs(gi['v'] * np.cos(gi['theta']) * t_lin)  # THIS IS ALWAYS POSITIVE
+    x_geo = abs(gi['v'] * np.cos(gi['theta']) * t_geo_0)  # THIS IS ALWAYS POSITIVE. KEEP IT SIMPLE
     # x = 0.0001 * x_lin * t_lin + 0.2 * x_lin * x_geo
     # x = 0.00001 * x_lin * t_lin + 0.1 * x_lin * x_geo
     # x = 0.001 * x_lin * t_lin + 0.005 * x_lin * x_geo
@@ -36,7 +36,9 @@ def simple_projectile(gi=None):
 
     '''If theta is close enough '''
 
-    y_lin = gi['v'] * np.sin(gi['theta']) * 2 * t_lin - 0.5 * G * t_lin ** 2  # OBS OBS this affect both up and down equally
+    adf = - 0.5 * G * t_lin ** 2
+    gg = np.sin(gi['theta'])
+    y_lin = gi['v'] * np.sin(gi['theta']) * 2 * t_lin #- 0.5 * G * t_lin ** 2  # OBS OBS this affect both up and down equally
     y_geo = gi['v'] * np.sin(gi['theta']) * 2 * t_geo_1 - 0.5 * G * t_geo_1 ** 2
 
     # y = 0.3 * y_lin + 0.7 * y_geo  # THIS AFFECTS HOW FAR DOWN THEY GO
@@ -47,6 +49,19 @@ def simple_projectile(gi=None):
     xy[:, 1] = y
 
     return xy
+
+def flip_projectile_x(sp):
+    """Only works for sp"""
+    if sp.gi['ld'][0] < sp.f.gi['left_mid']:  # flip x values
+        sp.xy_t[:, 0] = -sp.xy_t[:, 0]
+
+    # let a random subset still go over middle
+
+    if sp.gi['dist_to_theta_0'] < 0.2 and random.random() < 0.5:  # OBS NEEDS TUNING
+        if sp.gi['ld'][0] < sp.f.gi['left_mid']:
+            sp.xy_t[:, 0] = -sp.xy_t[:, 0]
+
+    return sp.xy_t
 
 
 # def shift_projectile(xy_t, origin=None, frames_tot_d=None, up_down=None, r_f_d_type=''):

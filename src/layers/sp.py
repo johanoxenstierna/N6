@@ -10,6 +10,7 @@ from src.projectile_functions import *
 from src.gen_trig_fun import gen_alpha, min_max_normalization
 from src.trig_functions import _sigmoid
 import matplotlib as mpl
+from scipy.stats import beta
 
 class Sp(AbstractLayer, AbstractSSS):
 
@@ -22,7 +23,7 @@ class Sp(AbstractLayer, AbstractSSS):
         # if f != None:
         _s.id = sh.id + "_f" + "_sp_" + str(id_int)
         _s.f = f
-        _s.gi = deepcopy(f.sps_gi)
+        _s.gi = deepcopy(sh.gi.sps_gi)  #
         _s.sp_lens = None
         _s.ars_bool = 0
 
@@ -52,23 +53,23 @@ class Sp(AbstractLayer, AbstractSSS):
 
         _s.set_frames_tot()  # SAME
 
-        _s.xy_t = simple_projectile(gi=_s.gi)
+        _s.xy_t = simple_projectile(gi=_s.gi)  # ALWAYS OUTPUTS RIGHT MOTION
 
-        if _s.gi['ld'][0] < _s.f.gi['left_mid']:  # flip x values
-            _s.xy_t[:, 0] = -_s.xy_t[:, 0]
+        _s.xy_t = flip_projectile_x(_s)
 
-        _s.xy = shift_projectile(_s.xy_t, origin=(_s.gi['ld'][0] + _s.gi['ld_offset'][0],
-                                                  _s.gi['ld'][1] + _s.gi['ld_offset'][1]), gi=_s.gi)
+        # _s.xy = shift_projectile(_s.xy_t, origin=(_s.gi['ld'][0] + _s.gi['ld_offset'][0],
+        #                                           _s.gi['ld'][1] + _s.gi['ld_offset'][1]), gi=_s.gi)
+
+        _s.xy = shift_projectile(_s.xy_t, origin=(_s.gi['ld'][0], _s.gi['ld'][1]), gi=_s.gi)
 
         '''out_screen if xy outside'''
         neg = np.argwhere(_s.xy[:, 1] < 0)
-        if len(neg) > 20:
+        if len(neg) > 10:
             _s.xy[neg[0, 0]:, 1] = -100  # [0, 0] cuz it comes as a single col
 
         _s.sp_lens = _s.set_sp_lens()  # PERHAPS THETA INSTEAD?
 
         _s.init_frame = _s.set_init_frame(i)
-
 
         _s.alphas = gen_alpha(_s, frames_tot=len(_s.xy), y_range=_s.gi['alpha_y_range'])
 
@@ -76,8 +77,13 @@ class Sp(AbstractLayer, AbstractSSS):
 
     def set_init_frame(_s, i):
 
-        index_init_frames = _s.gi['init_frames'].index(i)
-        init_frame = _s.gi['init_frames'][index_init_frames] + random.randint(0, _s.gi['init_frame_max_dist'])
+        index_init_frames = _s.f.gi['init_frames'].index(i)
+        init_frame_f = _s.f.gi['init_frames'][index_init_frames]
+        # init_frame_offset = random.randint(0, _s.gi['init_frame_max_dist']) # np.random.poisson(10, 100)
+        # init_frame_offset = np.random.poisson(1, 1)[0]
+        init_frame_offset = int(beta.rvs(a=2, b=5, loc=0, scale=40, size=1)[0])
+        init_frame = init_frame_f + init_frame_offset
+        #
 
         '''OBS special lateness to side ones'''
         if P.NUM_FS == 2:
@@ -94,35 +100,35 @@ class Sp(AbstractLayer, AbstractSSS):
         """
         """
 
+        '''FROM f. OBS f gi is used for some things and sp gi used for others'''
         _s.gi['ld'] = _s.f.gi['ld']
         _s.gi['theta_loc'] = _s.f.gi['theta_loc']
 
+        '''theta'''
         _s.gi['y_do_shift_start'] = 50
         _s.gi['y_do_shift_stop'] = 100
         _s.gi['y_do_shift'] = random.randint(_s.gi['y_do_shift_start'], _s.gi['y_do_shift_stop'])
 
         _s.gi['v'] = abs(np.random.normal(loc=_s.gi['v_loc'], scale=_s.gi['v_scale']))
 
-        _s.gi['theta'] = np.random.normal(loc=_s.gi['theta_loc'], scale=_s.gi['theta_scale'])  # + np.pi / 2
+        _s.gi['theta'] = np.random.normal(loc=_s.gi['theta_loc'], scale=_s.gi['theta_scale'])
 
         # _s.gi['theta'] = max(_s.gi['theta_loc'] - 0.23, _s.gi['theta'])  # theta must be larger than
         # _s.gi['theta'] = min(_s.gi['theta_loc'] + 0.23, _s.gi['theta'])  # theta must be lower than
 
-        # TODO: theta also needs to depend on left
-
         _s.gi['dist_to_theta_loc'] = abs(_s.gi['theta'] - _s.gi['theta_loc'])
         _s.gi['dist_to_theta_0'] = abs(_s.gi['theta'] - np.pi / 2)
 
-        # if _s.gi['dist_to_theta_0'] < 0.2 and _s.gi['v'] > _s.gi['v_loc'] + 0.1 * _s.gi['v_loc']:  # frames tot updated elsewhere
-        #     _s.gi['out_screen'] = True
-
+        '''ld'''
         _s.gi['ld_offset'] = [np.random.normal(loc=_s.gi['ld_offset_loc'][0], scale=_s.gi['ld_offset_scale'][0]),
                               np.random.normal(loc=_s.gi['ld_offset_loc'][1], scale=_s.gi['ld_offset_scale'][1])]
 
-        if _s.gi['theta'] > _s.gi['theta_loc']:
-            _s.gi['ld_offset'][0] -= 5  # pointing left=also to the left
-        else:
-            _s.gi['ld_offset'][0] += 5
+        _s.gi['ld'] = [_s.gi['ld'][0] + _s.gi['ld_offset'][0], _s.gi['ld'][1] + _s.gi['ld_offset'][1]]
+
+        # if _s.gi['theta'] > _s.gi['theta_loc']:
+        #     _s.gi['ld_offset'][0] -= 5  # pointing left=also to the left
+        # else:
+        #     _s.gi['ld_offset'][0] += 5
 
 
         # '''Colors'''
@@ -157,7 +163,7 @@ class Sp(AbstractLayer, AbstractSSS):
         sp_len_stop = 0.0 * f0 + 1.0 * f1  # THE MORE DOWN SHIFT, THE LARGER
         '''Assumed range: 100 - 200'''
         sp_len_stop = max(2, sp_len_stop)
-        sp_len_stop = min(6, sp_len_stop)
+        sp_len_stop = min(4, sp_len_stop)
         if _s.gi['special']:  # NOT USED
             sp_len_stop = 80
 

@@ -25,7 +25,7 @@ class AbstractLayer:
         # _s.frames_num = None  # number of frames to animate for
         _s.frame_ss = None
         # _s.frame_ss_start_offset = None
-        _s.index_im_ax = None
+        _s.index_axs0 = None
         _s.pic = None
         _s.pic_c = None  # copy of pic (might be useful if set_extent to be used with pic of certain color).
         _s.extent = "asdf"
@@ -39,7 +39,7 @@ class AbstractLayer:
         if i == _s.frame_ss[0]:
             _s.drawn = 1
         elif i > _s.frame_ss[0] and i < _s.frame_ss[1]:
-            _s.drawn = 2  # continue. needed bcs ani_update_step will create a new im_ax otherwise
+            _s.drawn = 2  # continue. needed bcs ani_update_step will create a new axs0 otherwise
             _s.clock += 1
         elif i == _s.frame_ss[1]:
             _s.drawn = 3  # end drawing
@@ -47,16 +47,16 @@ class AbstractLayer:
         else:  # NEEDED BCS OTHERWISE _s.drawn just stays on 3
             _s.drawn = 0
 
-    def ani_update_step(_s, ax0, im_ax, im_ax2, sp=False):
+    def ani_update_step(_s, ax0, axs0, axs1, sp=False):
         """
         Based on the drawn condition, draw, remove
         If it's drawn, return True (used in animation loop)
-        OBS major bug discovered: im_ax.pop(index_im_ax) OBVIOUSLY results in that all index_im_ax after popped get
+        OBS major bug discovered: axs0.pop(index_axs0) OBVIOUSLY results in that all index_axs0 after popped get
         screwed.
         Returns the following index:
         0: don't draw
         1: draw (will result in warp_affine)
-        2: ax has just been removed, so decrement all index_im_ax
+        2: ax has just been removed, so decrement all index_axs0
 
         TODO: _s.drawn and _s.drawBool one of them are clearly redundant.
         """
@@ -64,30 +64,28 @@ class AbstractLayer:
         if _s.drawn == 0:  # not drawn, for some reason this is necessary to keep
             return 0, None
         elif _s.drawn == 1: # start
-            _s.index_im_ax = len(im_ax)
+            _s.index_axs0 = len(axs0)
             if sp == False:  # NEEDED FOR PLACEHOLDER F
-                im_ax.append(ax0.imshow(_s.pic, zorder=_s.gi['zorder'], alpha=1, origin='lower', filternorm=False))  #, extent=[0, 14, 0, 19]))
+                axs0.append(ax0.imshow(_s.pic, zorder=_s.gi['zorder'], alpha=1, origin='lower', filternorm=False))  #, extent=[0, 14, 0, 19]))
             else:  # sp PLOTS WHOLE LINE. OBS. THERE IS NO IMSHOW FOR SP
-                im_ax.append(ax0.plot(_s.xy[:, 0], _s.xy[:, 1], zorder=_s.gi['zorder'],
+                axs0.append(ax0.plot(_s.xy[:, 0], _s.xy[:, 1], zorder=_s.gi['zorder'],
                                      alpha=0, color=(_s.R[0], _s.G[0], _s.B[0]))[0])
-                im_ax2.append(ax0.plot(_s.xy[:, 0], _s.xy[:, 1], zorder=_s.gi['zorder'],
-                                     alpha=0.5, color='black')[0])
-            _s.ax1 = im_ax[_s.index_im_ax]
+                # axs1.append(ax0.plot(_s.xy[:, 0], _s.xy[:, 1], zorder=_s.gi['zorder'],
+                #                      alpha=0.5, color='black')[0])
+            # _s.ax1 = axs0[_s.index_axs0]
             return 1, None
         elif _s.drawn == 2:  # continue drawing
-
             '''NEW: Checks whether sp is within bounds for ars'''
-
             return 1, None
-        elif _s.drawn == 3:  # end drawing
+        elif _s.drawn == 3:  # end drawing. OBS ONLY axs0
             try:
-                im_ax[_s.index_im_ax].remove()  # might save CPU-time
-                im_ax.pop(_s.index_im_ax)  # OBS OBS!!! MAKES im_ax shorter hence all items after index_im_ax now WRONG
+                axs0[_s.index_axs0].remove()  # might save CPU-time
+                axs0.pop(_s.index_axs0)  # OBS OBS!!! MAKES axs0 shorter hence all items after index_axs0 now WRONG
                 _s.ax1 = None
             except:
                 raise Exception("ani_update_step CANT REMOVE AX")
-            index_removed = _s.index_im_ax
-            _s.index_im_ax = None  # THIS IS NEEDED BUT NOT SURE WHY
+            index_removed = _s.index_axs0
+            _s.index_axs0 = None  # THIS IS NEEDED BUT NOT SURE WHY
             return 2, index_removed
 
     def check_extents(_s):
@@ -108,11 +106,7 @@ class AbstractLayer:
 
 class AbstractSSS:
     """
-    class for all objects that have sh as parent and need to repeat using the queing system
-    (except for waves currently). AND ONLY for children that do not follow ship movements (Expl, Smoke, Spl).
-    Does not work for sail due to movement black.
-    Functions in this class will be called several times in the animation loop.
-    This class takes over all id etc from the child class since theyre needed to sort out gi
+    class for all objects that have sh as parent
     """
 
     def __init__(_s, sh, id):
