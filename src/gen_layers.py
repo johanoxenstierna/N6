@@ -64,7 +64,7 @@ class GenLayers:
                 for pic_key, pic in fs_pics.items():
                     f = F(id=pic_key, pic=pic, sh=sh)  # THE PIC IS ALWAYS TIED TO 1 INSTANCE?
 
-                    f.set_ld_and_theta()
+                    f.finish_info()
                     '''sps always generated, but they will not be animated
                     if A_SPS set to 0. If an sh has an f, '''
 

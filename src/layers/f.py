@@ -16,9 +16,7 @@ class F(AbstractLayer, AbstractSSS):
         _s.sh = sh
         _s.pic = pic  # NOT SCALED
 
-        _s.gi = deepcopy(sh.gi.fs_gi)
-
-        # _s.sps_gi = sh.gi.sps_gi  # better do this at sp level
+        _s.gi = deepcopy(sh.gi.fs_gi)  # OBS!
 
         AbstractSSS.__init__(_s, sh, id)
 
@@ -31,17 +29,7 @@ class F(AbstractLayer, AbstractSSS):
         scale_ss = []
         return scale_ss
 
-    def finish_info(_s, fs_gi):
-        """This is written manually and adds/changes things in gi.
-        Usually this function is run dynamically depending on coordinates of
-        a parent layer at a certain frame. But not always.
-        """
-
-        # fs_gi['max_ri'] = np.max(_s.extent[:, 1])
-
-        return fs_gi
-
-    def set_ld_and_theta(_s):
+    def finish_info(_s):
 
         pos = np.random.random_integers(0, len(_s.gi['left_offsets']) - 1, 1)[0]
 
@@ -57,8 +45,9 @@ class F(AbstractLayer, AbstractSSS):
 
         _s.gi['ld'][0] = _s.gi['left_mid'] + _s.gi['left_offsets'][pos]  # random randint
         _s.gi['theta_loc'] = np.pi / 2 + _s.gi['theta_offsets'][pos]
-
         _s.gi['ld'][1] = 420
+
+        _s.gi['init_frames'] = [x + _s.gi['init_frame_x_offsets'][pos] for x in _s.gi['init_frames']]
 
     def set_frame_stop_to_sp_max(_s):
         """Loop through sps and set max to frame_stop"""

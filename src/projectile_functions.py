@@ -27,7 +27,7 @@ def simple_projectile(gi=None):
 
     x = gi['v'] * np.cos(gi['theta']) * t
     x_lin = abs(gi['v'] * np.cos(gi['theta']) * t_lin)  # THIS IS ALWAYS POSITIVE
-    x_geo = abs(gi['v'] * np.cos(gi['theta']) * t_geo_0)  # THIS IS ALWAYS POSITIVE. KEEP IT SIMPLE
+    x_geo = abs(4 * gi['v'] * np.cos(gi['theta']) * t_geo_0)  # THIS IS ALWAYS POSITIVE. KEEP IT SIMPLE
     # x = 0.0001 * x_lin * t_lin + 0.2 * x_lin * x_geo
     # x = 0.00001 * x_lin * t_lin + 0.1 * x_lin * x_geo
     # x = 0.001 * x_lin * t_lin + 0.005 * x_lin * x_geo
@@ -56,13 +56,12 @@ def flip_projectile_x(sp):
         sp.xy_t[:, 0] = -sp.xy_t[:, 0]
 
     # let a random subset still go over middle
-
-    if sp.gi['dist_to_theta_0'] < 0.2 and random.random() < 0.5:  # OBS NEEDS TUNING
+    dist_to_mid = abs(sp.gi['ld'][0] - 640)
+    if dist_to_mid < 100 and sp.gi['dist_to_theta_0'] < 0.1 and random.random() < 0.5:  # OBS NEEDS TUNING
         if sp.gi['ld'][0] < sp.f.gi['left_mid']:
             sp.xy_t[:, 0] = -sp.xy_t[:, 0]
 
     return sp.xy_t
-
 
 # def shift_projectile(xy_t, origin=None, frames_tot_d=None, up_down=None, r_f_d_type=''):
 def shift_projectile(xy_t, origin=None, gi=None):

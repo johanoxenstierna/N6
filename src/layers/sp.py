@@ -54,12 +54,7 @@ class Sp(AbstractLayer, AbstractSSS):
         _s.set_frames_tot()  # SAME
 
         _s.xy_t = simple_projectile(gi=_s.gi)  # ALWAYS OUTPUTS RIGHT MOTION
-
         _s.xy_t = flip_projectile_x(_s)
-
-        # _s.xy = shift_projectile(_s.xy_t, origin=(_s.gi['ld'][0] + _s.gi['ld_offset'][0],
-        #                                           _s.gi['ld'][1] + _s.gi['ld_offset'][1]), gi=_s.gi)
-
         _s.xy = shift_projectile(_s.xy_t, origin=(_s.gi['ld'][0], _s.gi['ld'][1]), gi=_s.gi)
 
         '''out_screen if xy outside'''
@@ -81,7 +76,7 @@ class Sp(AbstractLayer, AbstractSSS):
         init_frame_f = _s.f.gi['init_frames'][index_init_frames]
         # init_frame_offset = random.randint(0, _s.gi['init_frame_max_dist']) # np.random.poisson(10, 100)
         # init_frame_offset = np.random.poisson(1, 1)[0]
-        init_frame_offset = int(beta.rvs(a=2, b=5, loc=0, scale=40, size=1)[0])
+        init_frame_offset = int(beta.rvs(a=2, b=5, loc=0, scale=70, size=1)[0])
         init_frame = init_frame_f + init_frame_offset
         #
 
@@ -158,14 +153,15 @@ class Sp(AbstractLayer, AbstractSSS):
             return sp_lens
 
         f0 = abs(int(np.random.normal(loc=_s.gi['sp_len_stop_loc'], scale=_s.gi['sp_len_stop_scale'])))  # terrain
-        f1 = 0.5 * (_s.gi['y_do_shift'] - _s.gi['y_do_shift_start'])
+        f1 = 0 #0.5 * (_s.gi['y_do_shift'] - _s.gi['y_do_shift_start'])
 
-        sp_len_stop = 0.0 * f0 + 1.0 * f1  # THE MORE DOWN SHIFT, THE LARGER
+        # sp_len_stop = 0.0 * f0 + 1.0 * f1  # THE MORE DOWN SHIFT, THE LARGER
+        sp_len_stop = 5  # THE MORE DOWN SHIFT, THE LARGER
         '''Assumed range: 100 - 200'''
         sp_len_stop = max(2, sp_len_stop)
         sp_len_stop = min(4, sp_len_stop)
-        if _s.gi['special']:  # NOT USED
-            sp_len_stop = 80
+        # if _s.gi['special']:  # NOT USED
+        #     sp_len_stop = 80
 
         # if _s.gi['dist_to_theta_0'] > 0.1 and _s.gi['v'] > _s.gi['v_loc']:  # fast ones to side
         #     sp_len_stop = 3  # this is TRICKY
@@ -173,6 +169,56 @@ class Sp(AbstractLayer, AbstractSSS):
         sp_lens = np.linspace(sp_len_start, sp_len_stop, num=_s.gi['frames_tot'], dtype=int)
 
         return sp_lens
+
+    def check_ars(_s, xys_cur, ii):
+
+        """Use the tip of arrow"""
+
+        if len(xys_cur[0]) < 1:
+            return 0
+
+        if xys_cur[0][-1] > 0 and xys_cur[0][-1] < 1280 and xys_cur[1][-1] < 720:
+
+            if xys_cur[1][-1] > 450:
+                if xys_cur[0][-1] > 440 and xys_cur[0][-1] < 840:  # middle of screen ones always
+                    '''These probs depend on frames_tot'''
+                    if random.random() < 0.3:
+                        return 1
+                else:
+                    if random.random() < 0.2:  # 550 checks y
+                        return 1
+
+        return 0
+
+    def adjust_ars(_s, xys_cur):
+        """just decide how many to keep based on where it is"""
+
+        dist_to_first_y = abs(xys_cur[1][-1] - 450)
+
+        # PEND DEL: Easier to just keep first and last coord and then set y len by function
+        # sp_len_to_remove = int(-0.02 * dist_to_first + 4)
+        # if sp_len_to_remove < 0:  # longest arrows. dont touch. This should never happen tho
+        #     pass
+        # elif sp_len_to_remove >= len(xys_cur):  # only 2 coords
+        #     xys_cur = [xys_cur[0][-2:], xys_cur[1][-2:]]
+        #     arrow_len = 50
+        #     xys_cur[1][0] = xys_cur[1][-1] - arrow_len
+        # else:  # all the normal ones
+        #     xys_cur = [xys_cur[0][sp_len_to_remove:], xys_cur[1][sp_len_to_remove:]]
+        #     arrow_len = 200
+        #     xys_cur[1][0] = xys_cur[1][-1] - arrow_len
+
+        arrow_len_y = 0.5 * dist_to_first_y + 10   # x maybe too?
+        arrow_len_y = arrow_len_y + arrow_len_y * 0.3 * random.randint(-1, 1) * random.random()
+
+        # top_x = xys_cur[0][len(xys_cur[0]) - 1 - 1]  # the value before last used. UBE - 1
+        top_x = xys_cur[0][0]  # the value before last used. UBE - 1
+
+        top_y = xys_cur[1][-1] - arrow_len_y
+
+        xys_cur_adj = [[top_x, xys_cur[0][-1]], [top_y, xys_cur[1][-1]]]  # first col is x, second is y
+
+        return xys_cur_adj
 
     def set_frames_tot(_s):
 

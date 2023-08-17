@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 from scipy import stats
 
 
+aa = np.random.random_integers(4, 20, size=50)
+
 gamma = stats.gamma.pdf(np.linspace(0, 100, 100), 15, 20)
 
 ''' time between fires'''

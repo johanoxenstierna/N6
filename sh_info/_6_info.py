@@ -30,6 +30,7 @@ class Sh_6_info:
         This is like the constructor input for F class
         """
         FRAMES_TOT = 600  # MUST BE HIGHTER THAN SP.FRAMES_TOT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+        NUM_RANDS = 20
 
         fs_gi = {
             'rad_rot': -0.2,
@@ -39,13 +40,21 @@ class Sh_6_info:
             'frame_ss': None,  # simpler with this
             'ld': [None, None],  # set at init
             'left_mid': 640,
-            'left_offsets': list(np.linspace(-500, 500, num=20)),  # num doesnt matter cuz pos = random.randint(0, 20)
+            'left_offsets': list(np.linspace(-500, 500, num=NUM_RANDS)),  # [-500, 500] num doesnt matter cuz pos = random.randint(0, 20)
             # 'downs_sps': [],
             'theta_loc': None,  # set at init from offsets
-            'theta_offsets': list(np.linspace(0.5, -0.5, num=20)), #[0.3, 0.1, -0.2, -0.6],
+            'theta_offsets': list(np.linspace(0.5, -0.5, num=NUM_RANDS)), #[0.5, -0.5],
+            'init_frame_x_offsets': list(np.linspace(40, 0, num=NUM_RANDS - 15, dtype=int)) + list(np.linspace(0, 60, num=NUM_RANDS - 5, dtype=int)),
+            'init_frames_dirichlet': None,
             # 'x_mov': list(np.linspace(0, -15, num=FRAMES_TOT)),  # SPECIAL
             'zorder': 5
         }
+
+        assert(len(fs_gi['init_frame_x_offsets']) == NUM_RANDS)
+
+        dirichlet_delays = list(np.random.random_integers(100, 200, size=NUM_RANDS))
+        init_frames_dirichlet = np.random.dirichlet(dirichlet_delays, size=len(fs_gi['init_frames'])) * 100
+        fs_gi['init_frames_dirichlet'] = init_frames_dirichlet.astype(int)
 
         if P.NUM_FS == 2:
             fs_gi['left_offsets'] = [-10, 10]
@@ -69,11 +78,11 @@ class Sh_6_info:
             'theta_scale': 0.2,  # 0.1 unit circle straight up
             'sp_len_start_loc': 1, 'sp_len_start_scale': 1,
             'sp_len_stop_loc': 4, 'sp_len_stop_scale': 1,  # this only covers uneven terrain
-            'init_frame_max_dist': 10,
+            # 'init_frame_max_dist': 10,
             'special': False,
             'ld': [None, None],  # set by f
             'ld_offset_loc': [0, 0],  # NEW: Assigned when inited
-            'ld_offset_scale': [5, 3],  # [125, 5]
+            'ld_offset_scale': [40, 3],  # [125, 5]
             'rgb_start': [0.4, 0.7],  #
             'rgb_theta_diff_c': 0.2,
             'rgb_v_diff_c': 0.001,
