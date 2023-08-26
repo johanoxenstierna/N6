@@ -55,12 +55,9 @@ class Sp(AbstractLayer, AbstractSSS):
 
         _s.xy_t = simple_projectile(gi=_s.gi)  # ALWAYS OUTPUTS RIGHT MOTION
         _s.xy_t = flip_projectile_x(_s)
-        _s.xy = shift_projectile(_s.xy_t, origin=(_s.gi['ld'][0], _s.gi['ld'][1]), gi=_s.gi)
+        _s.xy = shift_projectile(_s.xy_t, origin=(_s.gi['ld_init'][0], _s.gi['ld_init'][1]), gi=_s.gi)
 
-        '''out_screen if xy outside'''
-        neg = np.argwhere(_s.xy[:, 1] < 0)
-        if len(neg) > 10:
-            _s.xy[neg[0, 0]:, 1] = -100  # [0, 0] cuz it comes as a single col
+        _s.out_screen()
 
         _s.sp_lens = _s.set_sp_lens()  # PERHAPS THETA INSTEAD?
 
@@ -76,9 +73,10 @@ class Sp(AbstractLayer, AbstractSSS):
         init_frame_f = _s.f.gi['init_frames'][index_init_frames]
         # init_frame_offset = random.randint(0, _s.gi['init_frame_max_dist']) # np.random.poisson(10, 100)
         # init_frame_offset = np.random.poisson(1, 1)[0]
-        init_frame_offset = int(beta.rvs(a=2, b=5, loc=0, scale=70, size=1)[0])
+        init_frame_offset = int(beta.rvs(a=2, b=5, loc=0, scale=200, size=1)[0])  # OBS
+        init_frame_offset = min(120, init_frame_offset)
         init_frame = init_frame_f + init_frame_offset
-        #
+
 
         '''OBS special lateness to side ones'''
         if P.NUM_FS == 2:
@@ -98,6 +96,7 @@ class Sp(AbstractLayer, AbstractSSS):
         '''FROM f. OBS f gi is used for some things and sp gi used for others'''
         _s.gi['ld'] = _s.f.gi['ld']
         _s.gi['theta_loc'] = _s.f.gi['theta_loc']
+        # _s.gi['theta_scale'] = _s.f.gi['theta_scale']
 
         '''theta'''
         _s.gi['y_do_shift_start'] = 50
@@ -108,9 +107,6 @@ class Sp(AbstractLayer, AbstractSSS):
 
         _s.gi['theta'] = np.random.normal(loc=_s.gi['theta_loc'], scale=_s.gi['theta_scale'])
 
-        # _s.gi['theta'] = max(_s.gi['theta_loc'] - 0.23, _s.gi['theta'])  # theta must be larger than
-        # _s.gi['theta'] = min(_s.gi['theta_loc'] + 0.23, _s.gi['theta'])  # theta must be lower than
-
         _s.gi['dist_to_theta_loc'] = abs(_s.gi['theta'] - _s.gi['theta_loc'])
         _s.gi['dist_to_theta_0'] = abs(_s.gi['theta'] - np.pi / 2)
 
@@ -118,7 +114,8 @@ class Sp(AbstractLayer, AbstractSSS):
         _s.gi['ld_offset'] = [np.random.normal(loc=_s.gi['ld_offset_loc'][0], scale=_s.gi['ld_offset_scale'][0]),
                               np.random.normal(loc=_s.gi['ld_offset_loc'][1], scale=_s.gi['ld_offset_scale'][1])]
 
-        _s.gi['ld'] = [_s.gi['ld'][0] + _s.gi['ld_offset'][0], _s.gi['ld'][1] + _s.gi['ld_offset'][1]]
+        _s.gi['ld_init'] = [_s.gi['ld'][0] + _s.gi['ld_offset'][0], _s.gi['ld'][1] + _s.gi['ld_offset'][1]]  # BEFORE
+        _s.gi['ld'] = deepcopy(_s.gi['ld_init'])  # IT GETS SHIFTED TO OPPOSITE
 
         # if _s.gi['theta'] > _s.gi['theta_loc']:
         #     _s.gi['ld_offset'][0] -= 5  # pointing left=also to the left
@@ -229,6 +226,12 @@ class Sp(AbstractLayer, AbstractSSS):
             # y_do_shift = _s.xy[:, 1][-1] - _s.gi['ld'][1]
             frames_to_remove = int(0.0 * _s.gi['y_do_shift'])
             _s.gi['frames_tot'] -= frames_to_remove
+
+    def out_screen(_s):
+        '''out_screen if xy outside'''
+        neg = np.argwhere(_s.xy[:, 1] < 0)
+        if len(neg) > 20:
+            _s.xy[neg[0, 0]:, 1] = -100  # [0, 0] cuz it comes as a single col
 
 
 

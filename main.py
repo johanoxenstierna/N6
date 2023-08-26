@@ -1,7 +1,6 @@
 """
 Sh are needed because it might be useful to
 have different settings for different fs
-
 """
 
 import numpy as np
@@ -53,13 +52,8 @@ def animate(i):
     # for sh_id, sh in shs.items():
     for f_id, f in sh.fs.items():
 
-        # if P.A_FS and 'fs' in sh.gi.child_names:  # 0, 5, 6!!!
-        # if i in sh.gi.fs_gi['init_frames']:
         if i in f.gi['init_frames']:
 
-            '''OBS. Mulitple fs cant fire on the same frame! Why?'''
-            # f = sh.find_free_obj(type='f')
-            # if f != None:
             if f.drawn == False:
                 # f.finish_info()
                 prints += "  adding f"
@@ -70,7 +64,7 @@ def animate(i):
 
                 f.drawn = 1  # this variable can serve multiple purposes (see below, and in set_clock)
                 # f.set_ld_and_theta()
-                sh.f_latest_drawn_id = f.id
+                # sh.f_latest_drawn_id = f.id
                 f.set_frame_ss(i, f.gi['frames_tot'], dynamic=False)  # uses AbstractSSS
 
                 ''' EVIL BUG HERE. An F cannot be allowed to init new sp children if old children
@@ -79,10 +73,8 @@ def animate(i):
 
                 for sp_key, sp in f.sps.items():  # THEY ARE ONLY INITED HERE
                     '''YES KEEP THIS: there are thousands of sp and pre-storing xy for all is a bit crazy.'''
-                    try:
-                        sp.dyn_gen(i)
-                    except:
-                        adf = 5
+
+                    sp.dyn_gen(i)
                     prints += "  adding sp"
                     sp.set_frame_ss(sp.init_frame, sp.gi['frames_tot'], dynamic=False)
                 f.set_frame_stop_to_sp_max()
@@ -119,7 +111,7 @@ def animate(i):
                     if drawBoolSP == 2:
                         prints += "  removing sp"
                         decrement_all_index_axs0(index_removed, shs)
-        print(prints)
+    print(prints)
 
     return axs0 + axs1  # if run live, it runs until window is closed
 

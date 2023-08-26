@@ -1,4 +1,4 @@
-
+import random
 
 import numpy as np
 from copy import deepcopy
@@ -43,11 +43,15 @@ class F(AbstractLayer, AbstractSSS):
             else:
                 pos = 1
 
-        _s.gi['ld'][0] = _s.gi['left_mid'] + _s.gi['left_offsets'][pos]  # random randint
-        _s.gi['theta_loc'] = np.pi / 2 + _s.gi['theta_offsets'][pos]
+        _s.gi['ld'][0] = _s.gi['left_offsets'][pos]
+        _s.gi['theta_loc'] = _s.gi['thetas'][pos]
         _s.gi['ld'][1] = 420
 
-        _s.gi['init_frames'] = [x + _s.gi['init_frame_x_offsets'][pos] for x in _s.gi['init_frames']]
+        '''Each f gets init_frames generated from genesis '''
+        _s.gi['init_frames'] = [x + _s.gi['init_frame_x_offsets'][pos] + _s.gi['init_frames_dirichlet'][i, pos]
+                                for i, x in enumerate(_s.gi['init_frames'])]
+
+        adf = 5
 
     def set_frame_stop_to_sp_max(_s):
         """Loop through sps and set max to frame_stop"""
