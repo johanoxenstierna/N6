@@ -23,6 +23,7 @@ def load_pics():
         # pics['backgr_d'] = imread('./images/processed/navarino_s0d.png')  # 482, 187
         # pics['backgr_d'] = imread('./images/processed/temp.png')  # 482, 187
     pics['backgr_d'] = imread('./images/processed/backgr.png')  # 482, 187
+    # pics['backgr_d'] = imread('./images/processed/backgr_white.png')  # 482, 187
     pics['backgr_ars'] = imread('./images/processed/backgr_ars.png')  # 482, 187
     # pics['volc_d'] = imread('./images/processed/volc_d_black.png')  # 482, 187
     # pics['volc_d'] = np.flipud(pics['volc_d'])

@@ -15,7 +15,7 @@ ARS = 0
 
 NUM_SPS_SH = None  # a
 NUM_SPS_F = 10  # used by 0, 5, 6  can be reduced for big bug
-NUM_FS = 50 # NEED AT LEAST 2
+NUM_FS = 100 # NEED AT LEAST 2
 
 # NUM_FIRE = 1
 

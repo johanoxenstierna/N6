@@ -63,6 +63,7 @@ class Sp(AbstractLayer, AbstractSSS):
 
         _s.init_frame = _s.set_init_frame(i)
 
+        """HERE SET ALPHA BASED ON THETA AND DIST TO MIDDLE"""
         _s.alphas = gen_alpha(_s, frames_tot=len(_s.xy), y_range=_s.gi['alpha_y_range'])
 
         assert (len(_s.alphas) == len(_s.xy))

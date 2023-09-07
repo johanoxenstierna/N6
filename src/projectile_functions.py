@@ -57,14 +57,15 @@ def flip_projectile_x(sp):
 
     # let a random subset still go over middle
     dist_to_mid = abs(sp.gi['ld'][0] - 640)
-    if dist_to_mid < 200 and sp.gi['dist_to_theta_0'] < 0.2:
-        if random.random() < 0.5:
+    if dist_to_mid < 50 and sp.gi['dist_to_theta_0'] < 0.4:
+        if random.random() < 0.4:
             if sp.gi['ld'][0] < sp.f.gi['left_mid']:
                 sp.xy_t[:, 0] = -sp.xy_t[:, 0]
-    elif dist_to_mid < 100 and sp.gi['dist_to_theta_0'] < 0.4:
-        if random.random() < 0.5:
+    elif dist_to_mid < 100 and sp.gi['dist_to_theta_0'] < 0.2:
+        if random.random() < 0.2:
             if sp.gi['ld'][0] < sp.f.gi['left_mid']:
                 sp.xy_t[:, 0] = -sp.xy_t[:, 0]
+
 
     return sp.xy_t
 

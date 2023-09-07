@@ -52,7 +52,7 @@ class Sh_6_info:
         }
 
         '''LEFT OFFSETS'''
-        _normal = stats.norm(loc=640, scale=100)
+        _normal = stats.norm(loc=640, scale=200)
         bounds_for_range = _normal.cdf([0, 1280])
         pp = np.linspace(*bounds_for_range, num=NUM_RANDS)
         left_offsets = _normal.ppf(pp).astype(int)
@@ -64,8 +64,8 @@ class Sh_6_info:
         # distribution = stats.norm(loc=np.pi, scale=4 * np.pi)
         _normal = stats.norm(loc=np.pi/2, scale=np.pi/4)
         # _normal = stats.norm(loc=np.pi/2, scale=np.pi/2)
-        # distribution_pdf = _normal.pdf(np.linspace(-1.96, 1.96, num=NUM_RANDS))
-        distribution_pdf = _normal.pdf(np.linspace(0, np.pi, num=NUM_RANDS))
+        # distribution_pdf = _normal.pdf(np.linspace(0, np.pi, num=NUM_RANDS))
+        distribution_pdf = _normal.pdf(np.linspace(0.25 * np.pi, 0.75 * np.pi, num=NUM_RANDS))
         # theta_offsets = distribution_pdf.ppf(np.linspace(0, 4, num=NUM_RANDS)
         thetas = _normal.ppf(distribution_pdf)
         thetas[0] = thetas[1]
@@ -113,7 +113,7 @@ class Sh_6_info:
             'ld_init': [None, None],  # set by f
             'ld': [None, None],  # set by f
             'ld_offset_loc': [0, 0],  # NEW: Assigned when inited
-            'ld_offset_scale': [100, 3],  # [125, 5]
+            'ld_offset_scale': [50, 3],  # [125, 5]
             'rgb_start': [0.4, 0.7],  #
             'rgb_theta_diff_c': 0.2,
             'rgb_v_diff_c': 0.001,

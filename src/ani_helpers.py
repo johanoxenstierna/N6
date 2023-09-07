@@ -55,6 +55,7 @@ def set_sps(sp, axs0, axs1, ax_b, ii):
 
 	axs0[sp.index_axs0].set_data(xys_cur)  # SELECTS A SUBSET OF WHATS ALREADY PLOTTED
 	axs0[sp.index_axs0].set_color((sp.R[sp.clock], sp.G[sp.clock], sp.B[sp.clock]))
+	# axs0[sp.index_axs0].set_color('black')
 	axs0[sp.index_axs0].set_alpha(sp.alphas[sp.clock])
 
 	if ars_bool == 1:  # on ground

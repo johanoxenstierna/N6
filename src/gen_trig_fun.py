@@ -11,7 +11,7 @@ def gen_alpha(g_obj, frames_tot=None, y_range=None, plot=False):
 		X = np.arange(0, frames_tot)
 	alpha = None
 
-	'''NEW'''
+	'''NEW: ADD DIST_TO_MIDDLE AND THETA'''
 	alpha = np.asarray(
 		([_sigmoid(x, grad_magn_inv=len(X) / 8, x_shift=3, y_magn=1., y_shift=0) for x in X]))
 
