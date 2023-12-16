@@ -14,19 +14,21 @@ from scipy import stats
 
 """WEIGHTED LINSPACE"""
 # your distribution:
-distribution = stats.norm(loc=640, scale=300)
+distribution = stats.norm(loc=0.6, scale=0.15)
 
 # percentile point, the range for the inverse cumulative distribution function:
-bounds_for_range = distribution.cdf([0, 1280])
+bounds_for_range = distribution.cdf([0, 1])
 
 # Linspace for the inverse cdf:
-pp = np.linspace(*bounds_for_range, num=40)
+pp = np.linspace(*bounds_for_range, num=3000)
 
-x = distribution.ppf(pp).astype(int)
+# x = distribution.ppf(pp).astype(float)
+x = distribution.cdf(pp)
 x[-1] = x[-2]
 # And just to check that it makes sense you can try:
 from matplotlib import pyplot as plt
-plt.hist(x)
+plt.plot(x)
+# plt.hist(x)
 plt.show()
 
 

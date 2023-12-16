@@ -12,11 +12,12 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
 from src import gen_layers
+
 from src.ani_helpers import *
 import P as P
 
 WRITE = 0  # FIX: smoka frames, waves  # change IMMEDIATELY back to zero (it immediately kills old file when re-run)
-FPS = 80
+FPS = 20
 
 Writer = animation.writers['ffmpeg']
 writer = Writer(fps=FPS, metadata=dict(artist='Me'), bitrate=3600)
@@ -59,7 +60,7 @@ def animate(i):
                 prints += "  adding f"
                 exceeds_frame_max, how_many = f.check_frame_max(i, f.gi['frames_tot'])
                 if exceeds_frame_max == True:
-                    print("EXCEEDS MAX\n")
+                    print("EXCEEDS MAX. This means objects at end of animation will go faster. \n")
                     f.gi['frames_tot'] = how_many
 
                 f.drawn = 1  # this variable can serve multiple purposes (see below, and in set_clock)

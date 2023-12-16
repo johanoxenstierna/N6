@@ -55,15 +55,19 @@ def set_sps(sp, axs0, axs1, ax_b, ii):
 
 	axs0[sp.index_axs0].set_data(xys_cur)  # SELECTS A SUBSET OF WHATS ALREADY PLOTTED
 	axs0[sp.index_axs0].set_color((sp.R[sp.clock], sp.G[sp.clock], sp.B[sp.clock]))
-	# axs0[sp.index_axs0].set_color('black')
+	# axs0[sp.index_axs0].set_color('black')  # OBS
 	axs0[sp.index_axs0].set_alpha(sp.alphas[sp.clock])
 
 	if ars_bool == 1:  # on ground
-		xys_cur = sp.adjust_ars(xys_cur)  # obs this overwrites it
+		xys_cur, z_offset = sp.adjust_ars(xys_cur)  # obs this overwrites it
+
 		sp.frame_ss[1] = ii + 1  # i.e. it will be removed next frame, so this is last set_data
 		# '''OBS in this project an f lasts the whole time. But better could have been to wait for all '''
-		axs1.append(ax_b.plot(xys_cur[0], xys_cur[1], zorder=sp.gi['zorder'],
-		                     alpha=sp.alphas[sp.clock], color=(sp.R[sp.clock], sp.G[sp.clock], sp.B[sp.clock]))[0])
+		axs1.append(ax_b.plot(xys_cur[0], xys_cur[1], zorder=sp.gi['zorder'] + z_offset,
+		                     alpha=random.uniform(0.4, 1.0),
+		                      color=(sp.R[sp.clock], sp.G[sp.clock], sp.B[sp.clock]),
+		                      )[0]
+		            )
 
 # def check_ars(xys_cur, ii):
 #

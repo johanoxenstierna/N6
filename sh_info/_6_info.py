@@ -60,7 +60,8 @@ class Sh_6_info:
         left_offsets[-1] = left_offsets[-2]
         fs_gi['left_offsets'] = left_offsets
 
-        '''THETA OFFSETS. OBS ONLY POSITIVE'''
+        '''THETA OFFSETS. OBS ONLY REPRESENT RIGHT MOVING X
+        OBS THIS IS FUZZY, BUT WORKS'''
         # distribution = stats.norm(loc=np.pi, scale=4 * np.pi)
         _normal = stats.norm(loc=np.pi/2, scale=np.pi/4)
         # _normal = stats.norm(loc=np.pi/2, scale=np.pi/2)
@@ -87,8 +88,9 @@ class Sh_6_info:
                 fs_gi['init_frames_dirichlet'][1:, col] *= -1
 
         if P.NUM_FS == 2:
-            fs_gi['left_offsets'] = [-10, 10]
-            fs_gi['theta_offsets'] = [-0.2, 0.2]
+            fs_gi['left_offsets'] = [600, 680]
+            fs_gi['thetas'] = [np.pi / 2 + 0.1, np.pi / 2 - 0.1]
+            fs_gi['theta_offsets'] = [-0.01, 0.01]
 
         '''When the fs fire'''
         # aa = np.random.dirichlet()
@@ -101,9 +103,9 @@ class Sh_6_info:
         THEIR INIT FRAMES CAN BE SET BY F THOUGH.
         """
         sps_gi = {
-            'alpha_y_range': [0.5, 1.0],
+            'alpha_y_range': [0.5, 0.9],
             'init_frames': None,  # ONLY FOR THIS TYPE
-            'frames_tot': 400,  # MUST BE LOWER THAN SP.FRAMES_TOT. MAYBE NOT. INVOLVED IN BUG
+            'frames_tot': 200,  # MUST BE LOWER THAN SP.FRAMES_TOT. MAYBE NOT. INVOLVED IN BUG  OBS
             'v_loc': 50, 'v_scale': 4,  # 50 THIS IS HOW HIGH THEY GO (not how far down)
             'theta_scale': 0.01,  # 0.1 unit circle straight up
             'sp_len_start_loc': 1, 'sp_len_start_scale': 1,

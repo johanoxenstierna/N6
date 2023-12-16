@@ -52,6 +52,8 @@ def simple_projectile(gi=None):
 
 def flip_projectile_x(sp):
     """Only works for sp"""
+
+    # PEND DEL 
     if sp.gi['ld_init'][0] < sp.f.gi['left_mid']:  # flip x values
         sp.xy_t[:, 0] = -sp.xy_t[:, 0]
 
@@ -79,33 +81,41 @@ def shift_projectile(xy_t, origin=None, gi=None):
 
     xy = copy.deepcopy(xy_t)
 
+    '''THIS MAKES THEM NEVER CROSS MIDDLE'''
+    if origin[0] < 640 and xy[0, 0] < xy[-1, 0]:  # TO THE LEFT BUT POSITIVE
+        xy[:, 0] = -xy[:, 0]
+    elif origin[0] > 640 and xy[0, 0] > xy[-1, 0]:  # TO THE RIGHT BUT NEGATIVE
+        xy[:, 0] = -xy[:, 0]
+
+    # '''let a random subset still go over middle'''
+    dist_to_mid = abs(origin[0] - 640)
+    if dist_to_mid < 50 and gi['dist_to_theta_0'] < 0.4:
+        if random.random() < 0.4:
+            if origin[0] < 640:
+                xy[:, 0] = -xy[:, 0]
+    elif dist_to_mid < 100 and gi['dist_to_theta_0'] < 0.2:
+        if random.random() < 0.2:
+            if origin[0] < 640:
+                xy[:, 0] = -xy[:, 0]
+
     # if gi['out_screen']:
     #     xy = xy[:int(len(xy) / 2), :int(len(xy) / 2)]
     #     gi['frames_tot'] = len(xy)
 
-    '''
-    y0: First it needs to be flipped bcs all values are pos to start with, but it needs to be neg.  
-    '''
-    # if up_down == 'up' or up_down == 'down':
-    #     xy[:, 1] *= -1  # flip it. Now all neg
-
     if gi['up_down'] == 'up' or gi['up_down'] == 'down':
         xy[:, 1] *= -1  # flip it. Now all neg
 
-    try:
-        x_shift_r_f_d = xy[0, 0]  # TODO: change for left motion
-        y_shift_r_f_d = xy[0, 1]
-    except:
-        raise Exception("adf")
 
     '''x'''
-    xy[:, 0] += origin[0] - x_shift_r_f_d  # x
+    xy[:, 0] += origin[0]  # OBS THIS ORIGIN MAY BE BOTH LEFT AND RIGHT OF 640
 
     '''
     y1: Move. y_shift_r_f_d is MORE shifting downward (i.e. positive), but only the latter portion 
     of frames is shown.
     '''
-    xy[:, 1] += origin[1] - y_shift_r_f_d
+    xy[:, 1] += origin[1] - xy[0, 1]
+
+
 
     return xy
 

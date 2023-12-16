@@ -53,9 +53,9 @@ class Sp(AbstractLayer, AbstractSSS):
 
         _s.set_frames_tot()  # SAME
 
-        _s.xy_t = simple_projectile(gi=_s.gi)  # ALWAYS OUTPUTS RIGHT MOTION
-        _s.xy_t = flip_projectile_x(_s)
-        _s.xy = shift_projectile(_s.xy_t, origin=(_s.gi['ld_init'][0], _s.gi['ld_init'][1]), gi=_s.gi)
+        _s.xy_t = simple_projectile(gi=_s.gi)  # OUTPUTS BOTH LEFT (NEG) AND RIGHT (POS)
+        # _s.xy_t = flip_projectile_x(_s)
+        _s.xy = shift_projectile(_s.xy_t, origin=(_s.gi['ld'][0], _s.gi['ld'][1]), gi=_s.gi)
 
         _s.out_screen()
 
@@ -127,11 +127,11 @@ class Sp(AbstractLayer, AbstractSSS):
         # '''Colors'''
         # 0
         start = random.uniform(_s.gi['rgb_start'][0], _s.gi['rgb_start'][1])  # starts hot
-        v_diff = _s.gi['v_loc'] - _s.gi['v']  # less hot for faster ones, neg if its too fast
+        # v_diff = _s.gi['v_loc'] - _s.gi['v']  # less hot for faster ones, neg if its too fast
 
         '''color darkened for fast ones'''
-        start = min(_s.gi['rgb_start'][1], start - _s.gi['rgb_theta_diff_c'] * _s.gi['dist_to_theta_loc'] + \
-                    _s.gi['rgb_v_diff_c'] * v_diff)
+        start = min(_s.gi['rgb_start'][1], start - _s.gi['rgb_theta_diff_c'] * random.random() + \
+                    _s.gi['rgb_v_diff_c'] * random.uniform(5, 10))
         end = max(0.3, random.uniform(0.3, start - 0.1))
 
         x = np.linspace(start, end, _s.gi['frames_tot'])  # no need to flip since it starts hot
@@ -192,6 +192,7 @@ class Sp(AbstractLayer, AbstractSSS):
         """just decide how many to keep based on where it is"""
 
         dist_to_first_y = abs(xys_cur[1][-1] - 450)
+        z_offset = int(dist_to_first_y)
 
         # PEND DEL: Easier to just keep first and last coord and then set y len by function
         # sp_len_to_remove = int(-0.02 * dist_to_first + 4)
@@ -211,12 +212,19 @@ class Sp(AbstractLayer, AbstractSSS):
 
         # top_x = xys_cur[0][len(xys_cur[0]) - 1 - 1]  # the value before last used. UBE - 1
         top_x = xys_cur[0][0]  # the value before last used. UBE - 1
+        do_x = xys_cur[0][-1]
+        dist_to_640 = abs(do_x - 640)
 
         top_y = xys_cur[1][-1] - arrow_len_y
 
-        xys_cur_adj = [[top_x, xys_cur[0][-1]], [top_y, xys_cur[1][-1]]]  # first col is x, second is y
+        '''Fix more x length'''
+        if xys_cur[1][-1] > 580 and dist_to_640 > 50:
+            diff_x = do_x - top_x  # neg: left side, pos: right side
+            do_x = do_x + diff_x * 1.5
 
-        return xys_cur_adj
+        xys_cur_adj = [[top_x, do_x], [top_y, xys_cur[1][-1]]]  # first col is x, second is y
+
+        return xys_cur_adj, z_offset
 
     def set_frames_tot(_s):
 
